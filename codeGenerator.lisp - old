@@ -1,0 +1,80 @@
+;; Goal state
+;; Add function to class
+;; (fnPattern (public void setClassName) ( (int id) (string name) ) ((settAtt ,name "id.ToString();")) )
+;; (onClass testClass settName)
+;; (fn-def-pattern ("public" "void" "setName") ("string" "newName") (("int" "id")("bool" "employee")) c-name)
+;;(fn-def-pattern ("public" "void" "setName") ("string" "newName") (("int" "id")("bool" "employee"))  (list "var _ = 2;"))
+;; (fn-def-pattern ("public" "void" "setName") ("string" "newName") (("int" "id")("bool" "employee"))  (list "var _ = 2;" (fn-body-add-setter-fn fn-new-para-name)))
+;; 
+(defmacro fn-def-pattern ((c-visibility c-ret-type c-name) (fn-new-para-type fn-new-para-name)  fnParams &body body)
+  `(let ((c-name ,c-name)
+	 (fn-new-para-name ,fn-new-para-name))
+     (format nil "~a ( ~a ~a ){ ~% ~{~a~&~}  ~& } " 
+	     ,(format nil "~a ~a ~a " c-visibility c-ret-type c-name )
+	     ,(format nil "~{~{~a ~a~}~^,~}" fnParams ) ;;  '((int id)(string name))
+	     ,(format nil ",~a ~a" fn-new-para-type fn-new-para-name)
+	     ;;(list c-name fn-new-para-name)
+	     ,@body
+	     ;;(fn-body-add-setter-fn fn-new-para-name)
+	     )))
+
+(defun c-sharp-fn-def (c-visibility c-ret-type c-name)
+  (format nil "~a ~a ~a " c-visibility c-ret-type c-name ))
+
+(defmacro fn-body-add-setter ( &body body )
+  `'( ,@body))
+
+(defun fn-body-add-setter-fn ( var-name )
+  (format nil "var _~a = ~a;" var-name var-name) )
+
+(defun fn-body-add-setter-fn-test ( var-class var-name body-list )
+  (list(format nil "~{~a~}~&var _~a = ~a;" body-list var-name var-name) ))
+
+(defun mapa-b (fn a b &optional (step 1))
+  (do ((i a (+ i step))
+       (result nil))
+      ((> i b) (nreverse result))
+    (push (funcall fn i) result)))
+
+(set-dispatch-macro-character #\# #\?
+			      #'(lambda (stream char1 char2)
+				  `#'(lambda (&rest ,(gensym))
+				       ,(read stream t nil t))))
+
+;;> (mapcar #?2 '(a b c))
+;;(222)
+
+(defmacro defdelim (left right parms &body body)
+  `(ddfn ,left ,right #'(lambda ,parms ,@body)))
+
+
+
+(let ((rpar (get-macro-character #\) )))
+  (defun ddfn (left right fn)
+    (set-macro-character right rpar)
+    (set-dispatch-macro-character #\# left
+				  #'(lambda (stream char1 char2)
+				      (apply fn
+					     (read-delimited-list right stream t))))))
+
+(defdelim #\[ #\] (x y)  (list 'quote (mapa-b #'identity (ceiling x) (floor y))))
+(defdelim #\C #\C (rest)  
+	  (list 'quote  (SPLIT-SEQUENCE #\Space rest ) ) )
+
+(defun make-string-readable (string) (concatenate 'string "(" string ")" ))
+(defvar *code-test* "public void setName  ( int id,bool employee ,string newName ){ 
+ var _ = 2;
+var _newName = newName;
+  
+ } ")
+
+(read-from-string
+"public void setName  ( int id,bool employee ,string newName ){ 
+ var _ = 2;
+var _newName = newName;
+  
+ } " )
+
+;; Visibility macros
+(defmacro public (ret-type name)
+  `'( "public" ,(symbol-name ret-type)  ,(symbol-name name )))

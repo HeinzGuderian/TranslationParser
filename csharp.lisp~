@@ -1,0 +1,11 @@
+;; Goal state
+;; Add function to class
+;; (fnPattern (public void setClassName) ( (int id) (string name) ) ((settAtt ,name "id.ToString();")) )
+;; (onClass testClass settName)
+
+(defmacro fnPattern (fnDef fnParams fnBody)
+  `(quote (,@fnDef 
+  ,(format nil "~{~{~a ~}~^, ~}" fnParams ) ;;  '((int id)(string name))
+  ;;(loop for (a b) in ,fnParams do (format ))
+  
+  ))) 

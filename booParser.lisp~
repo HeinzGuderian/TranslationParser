@@ -1,0 +1,7 @@
+(ql:quickload "cl-utilities")
+
+(defpackage :boo-parser
+  (:use :common-lisp :tokenizer))
+(in-package :csharp-parser)
+
+(declaim (optimize (speed 0) (space 0) (debug 3)))

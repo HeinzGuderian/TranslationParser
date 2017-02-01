@@ -1,0 +1,46 @@
+
+(defun parse-c-sharp (string-content)
+  (split #\Space string-content))
+
+(defun parse-c-sharp-fn-old (fn-string-list)
+  (dbind (visibility ret-type fn-name &rest rest) fn-string-list
+	 (list (list visibility ret-type fn-name) 
+	       rest)))
+
+(defun parse-c-sharp-fn-basic (token-string-list)
+  (parse-c-sharp-fn-basic-def token-string-list))
+
+(defun parse-c-sharp-fn-basic-def (token-string-list)
+  (cons (list (nth 0 token-string-list) (nth 1 token-string-list) (nth 2 token-string-list)) 
+	(parse-c-sharp-fn-basic-paras (nthcdr 3 token-string-list))))
+
+(defun build-param-list (token-string-list new-list)
+  (if (string-equal ")" (car token-string-list))
+      (cons (nreverse new-list )
+	    (parse-c-sharp-fn-basic-body (cdr token-string-list))) 
+      (let ((current-token (cadr token-string-list))
+	    (next-tokens (cddr token-string-list)))
+	(build-param-list (nthcdr 3 token-string-list) 
+			    (push (list current-token
+					(car next-tokens))
+				  new-list )))))
+
+(defun parse-c-sharp-fn-basic-paras (token-string-list)
+  (build-param-list token-string-list
+		    (list )))
+
+(defun parse-c-sharp-fn-basic-body (token-string-list) 
+  (when (not(string-equal (car token-string-list) "{")) (error "body does not begin with {"))
+  (list 
+   (list-stmts (cdr token-string-list))))
+
+(defun list-stmts (token-string-list)
+  (let ((stmts-list ())
+	(stmt ()))
+    (dolist (token token-string-list) 
+      (if (string-equal token ";")
+	  (progn 
+	    (push (nreverse stmt) stmts-list)
+	    (setf stmt ()))
+	  (push token stmt)))
+  (nreverse stmts-list)))
