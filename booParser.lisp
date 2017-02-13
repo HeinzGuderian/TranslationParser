@@ -25,7 +25,7 @@ import UnityEngine
 
 partial public class FactoryEconomy (BuildingEconomy, IGUI):
       private _playerGameObjectList as List
-      
+      public _playerGameObject as GameObject
 ")
 
 "
@@ -102,7 +102,7 @@ Field = Visibility String as Type : FieldBody
   (let ((ast-tree (list(make-ast-node :file "name"))))
     (parse-file tokenizer ast-tree)
 ;;    ))
-    ast-tree))
+   ast-tree))
 
 (defun parse-file (tokenizer ast-tree)
   (parse-imports tokenizer ast-tree)
@@ -127,8 +127,7 @@ Field = Visibility String as Type : FieldBody
 
 (defun parse-class (tokenizer ast-tree)
   (parse-class-declaration tokenizer ast-tree)
-  (parse-class-body tokenizer ast-tree ())
-  ast-tree)
+  (parse-class-body tokenizer ast-tree ()))
     
 
 (defun parse-class-declaration (tokenizer ast-tree)
@@ -165,19 +164,30 @@ Field = Visibility String as Type : FieldBody
     (push token x)))
 
 (defun parse-class-body (tokenizer ast-tree node-stack)
-  (if (null node-stack)
-      (setf node-stack (list(parse-token-to-ast-node tokenizer))))
-  (let ((token (current-token tokenizer)))
-    (cond ((and (same-node-symbol 
-		 (symbol-from-ast-node (car node-stack))
-		 :visibility)
-		(match token "def"))
-	   "fn")
-	  ((same-node-symbol 
-	    (symbol-from-ast-node (car node-stack))
-	    :visibility)
-	   (push-node (parse-class-variable tokenizer ast-tree node-stack) ast-tree))
-	  (t nil))))
+  ;;(if (null node-stack)
+  ;;    (setf node-stack (list(parse-token-to-ast-node tokenizer))))
+  (loop do 
+       (let ((token (current-token tokenizer)))
+	 (cond ((class-fn? token node-stack)
+		"fn")
+	       ((class-variable? token node-stack) 
+		(push-node (make-class-variable tokenizer node-stack) ast-tree)
+		(setf node-stack nil)
+		(advanze-token tokenizer))
+	       ((eq (peek-token tokenizer) nil) "end finito")
+	       (t (progn
+		    (if (eq nil node-stack)
+			(setf node-stack (list(parse-token-to-ast-node tokenizer)))
+			(push (parse-token-to-ast-node tokenizer) (cdr (last node-stack)))) ))))
+       while (not(eq (peek-token tokenizer) nil))))
+	       ;;(parse-class-body tokenizer ast-tree node-stack))))))
+
+(defun class-fn? (token node-stack)
+  (and (consp node-stack) 
+		     (same-node-symbol 
+		      (symbol-from-ast-node (car node-stack))
+		      :visibility)
+		     (match token "def")))
 
 (defun parse-token-to-ast-node (tokenizer)
   (cond ((visibility? (current-token tokenizer)) (make-visibility-node tokenizer))
@@ -194,15 +204,25 @@ Field = Visibility String as Type : FieldBody
   (let ((vis-list (grab-tokens-until-fn tokenizer (lambda (x) (not (visibility? x))))))
     (make-ast-node :visibility vis-list)))
 
+(defun class-variable? (token node-stack)
+  (and (consp node-stack) 
+       (same-node-symbol (symbol-from-ast-node (car node-stack))
+			 :visibility))) 
+
 (defun parse-class-variable (tokenizer ast-tree node-stack)
+  (push-node (make-class-variable tokenizer node-stack) ast-tree)
+  (setf node-stack nil)
+  (advanze-token tokenizer))
+
+(defun make-class-variable (tokenizer node-stack)
   (if (not (match (peek-token tokenizer) "as"))
       "error parsing variable")
   (let* ((name (current-token tokenizer))
 	 (type (progn
 		 (advanze-token tokenizer)
 		 (advanze-token tokenizer))))
-    (make-ast-node :class-variable 
-		   (list (car node-stack)
-			 (make-ast-node :variable-name name)
-			 (make-ast-node :type type)))))
-
+	 (make-ast-node :class-variable 
+	   (list (car node-stack)
+		 (make-ast-node :variable-name name)
+		 (make-ast-node :type type)))))
+  
