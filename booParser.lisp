@@ -24,11 +24,17 @@ import UnityEngine
 import UnityEngine
 
 partial public class FactoryEconomy (BuildingEconomy, IGUI):
-
-     public def Start(container as List):
-          return \"ArmyEconomy\"
+      private _playerGameObjectList as List
+      
 ")
 
+"
+_currentPlayerGUI as GuiScript
+      _haveConceded as bool = false
+      public LevelIsLoaded = false
+      private final executeTurnString as string = \"executeTurn\"
+ public def Start(container as List):
+          return \"ArmyEconomy\" "
 (defun current-token (tokenizer)
   (funcall tokenizer :current))
 
@@ -59,11 +65,19 @@ partial public class FactoryEconomy (BuildingEconomy, IGUI):
 " Bnf for basic Boo parsing:
 File = Imports Class
 Imports = Import & Import
-Import = 'import' string 
+Import = 'import' String 
 
-Class = ClassDeclaration ( ClassParameters ) : body
-ClassDeclaration = partial? public? class string
-ClassParameters = string | string ,
+Class = ClassDeclaration ( ClassParameters ) : ClassBody
+ClassDeclaration = partial? public? class String
+ClassParameters = String | String , ClassParameters
+
+ClassBody = ClassVariable | Field | Function
+ClassVariable  = Visibility? String as String
+Visibility = public final | public static final | public static | public | private | private final | 
+private static final
+
+Field = Visibility String as Type : FieldBody
+
 "
 
 (defun make-ast-node (symbol data)
@@ -72,8 +86,20 @@ ClassParameters = string | string ,
 (defun push-node (node tree)
   (push node (cdr (last tree))))
 
+(defun symbol-from-ast-node (node)
+  (car node))
+
+(defun data-from-ast-node (node)
+  (cdr node))
+
+(defun same-node-symbol (sym1 sym2)
+  (eq sym1 sym2))
+
+(defun match (token symbol)
+  (string= token symbol))
+
 (defun parse-boo (tokenizer)
-  (let ((ast-tree (list(cons :file "name"))))
+  (let ((ast-tree (list(make-ast-node :file "name"))))
     (parse-file tokenizer ast-tree)
 ;;    ))
     ast-tree))
@@ -101,6 +127,7 @@ ClassParameters = string | string ,
 
 (defun parse-class (tokenizer ast-tree)
   (parse-class-declaration tokenizer ast-tree)
+  (parse-class-body tokenizer ast-tree ())
   ast-tree)
     
 
@@ -114,6 +141,8 @@ ClassParameters = string | string ,
     (push-node class-modifiers-node ast-tree)
     (push-node class-name-node ast-tree)
     (push-node class-parameter-list ast-tree)
+    (advanze-token tokenizer)
+    (advanze-token tokenizer)
     ast-tree))
     ;;(let* ((class-name-node (cons :class-name (cadr token-list)))
 	;;   (class-paras-stream (parse-class-param-list (cdddr token-list) ast-tree)))
@@ -127,11 +156,53 @@ ClassParameters = string | string ,
     ast-node))
 
 (defun grab-tokens-until (tokenizer end-string)
+  (grab-tokens-until-fn tokenizer (lambda (x) (string= x end-string))))
+
+(defun grab-tokens-until-fn (tokenizer end-fn)
   (do ((token (current-token tokenizer) (advanze-token tokenizer))
        (x ()))
-      ((string= token end-string) (nreverse x))
+      ((funcall end-fn token) (nreverse x))
     (push token x)))
 
-(defun parse-function (tokenizer ast-tree))
+(defun parse-class-body (tokenizer ast-tree node-stack)
+  (if (null node-stack)
+      (setf node-stack (list(parse-token-to-ast-node tokenizer))))
+  (let ((token (current-token tokenizer)))
+    (cond ((and (same-node-symbol 
+		 (symbol-from-ast-node (car node-stack))
+		 :visibility)
+		(match token "def"))
+	   "fn")
+	  ((same-node-symbol 
+	    (symbol-from-ast-node (car node-stack))
+	    :visibility)
+	   (push-node (parse-class-variable tokenizer ast-tree node-stack) ast-tree))
+	  (t nil))))
 
-(defun parse-funcion-visibility (tokenizer ast-tree))
+(defun parse-token-to-ast-node (tokenizer)
+  (cond ((visibility? (current-token tokenizer)) (make-visibility-node tokenizer))
+	(t (current-token tokenizer))))
+
+(defun visibility? (string)
+  (cond ((match string "private") t)
+	((match string "public") t)
+	((match string "partial") t)
+	((match string "final") t)
+	(t nil)))
+
+(defun make-visibility-node (tokenizer)
+  (let ((vis-list (grab-tokens-until-fn tokenizer (lambda (x) (not (visibility? x))))))
+    (make-ast-node :visibility vis-list)))
+
+(defun parse-class-variable (tokenizer ast-tree node-stack)
+  (if (not (match (peek-token tokenizer) "as"))
+      "error parsing variable")
+  (let* ((name (current-token tokenizer))
+	 (type (progn
+		 (advanze-token tokenizer)
+		 (advanze-token tokenizer))))
+    (make-ast-node :class-variable 
+		   (list (car node-stack)
+			 (make-ast-node :variable-name name)
+			 (make-ast-node :type type)))))
+

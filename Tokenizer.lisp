@@ -29,6 +29,7 @@ var _newName = newName;
   
  } " )
 
+;;'("public" "private" "protected" ";" "(" ")" "{" "}" ",")
 (defmacro abbrev (short long)
   `(defmacro ,short (&rest args)
      `(,',long ,@args)))
