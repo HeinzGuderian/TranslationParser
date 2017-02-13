@@ -7,32 +7,54 @@
 (declaim (optimize (speed 0) (space 0) (debug 3)))
 
 ;; (defparameter test (parse-boo (tokenize-with-symbols *code-test*)))
-(defvar *code-test* 
-"def Start():
+(defparameter *code-test* 
+"public def Start(container as List):
      return \"ArmyEconomy\" ")
-(defvar *code-test-class* 
+(defparameter *code-test-class* 
 " 
 import UnityEngine
+import UnityEngine
 
-partial publicclass FactoryEconomy (BuildingEconomy, IGUI):
+partial public class FactoryEconomy (BuildingEconomy, IGUI):
 ")
 
-(defun tokenize-with-symbols (string-to-tokenize)
-  (tokenizer:tokenize-fn string-to-tokenize
-   (tokenizer:add-length-to-strings '("public"
-     "def"
-     "return"
-     ";"
-     "("
-     ")"
-     "{"
-     "}"
-     ","
-     "\""
-     "/"
-     "\Return"
-     "\LineFeed")))) 
+(defparameter *code-test-full* 
+" 
+import UnityEngine
+import UnityEngine
 
+partial public class FactoryEconomy (BuildingEconomy, IGUI):
+
+     public def Start(container as List):
+          return \"ArmyEconomy\"
+")
+
+(defun current-token (tokenizer)
+  (funcall tokenizer :current))
+
+(defun advanze-token (tokenizer)
+  (funcall tokenizer :advanze))
+
+(defun peek-token (tokenizer)
+  (funcall tokenizer :peek))
+
+(defun tokenize-with-symbols (string-to-tokenize)
+  (tokenizer:tokenizer-object 
+   (tokenizer:tokenize-fn string-to-tokenize
+			  (tokenizer:add-length-to-strings '("public"
+							     "def"
+							     "return"
+							     ";"
+							     "("
+							     ")"
+							     "{"
+							     "}"
+							     ","
+							     "\""
+							     "/"
+							     "\Return"
+							     "\LineFeed")))))
+  
 
 " Bnf for basic Boo parsing:
 File = Imports Class
@@ -44,86 +66,72 @@ ClassDeclaration = partial? public? class string
 ClassParameters = string | string ,
 "
 
-(defun parse-boo (token-list)
+(defun make-ast-node (symbol data)
+  (cons symbol data))
+
+(defun push-node (node tree)
+  (push node (cdr (last tree))))
+
+(defun parse-boo (tokenizer)
   (let ((ast-tree (list(cons :file "name"))))
-    (parse-file token-list ast-tree)
+    (parse-file tokenizer ast-tree)
 ;;    ))
     ast-tree))
 
-(defun parse-file (token-list ast-tree)
-  (let ((token (car token-list)))
-    (if (string= token "import")  
-	(let ((class-token-stream (parse-imports token-list ast-tree)))
-	  (parse-class class-token-stream ast-tree))
-	"fff")))
+(defun parse-file (tokenizer ast-tree)
+  (parse-imports tokenizer ast-tree)
+  (parse-class tokenizer ast-tree))
 
-(defun parse-imports (token-list ast-tree)
-  (let ((ast-node (cons :import (cadr token-list)))
-	(token-list (nthcdr 2 token-list)))
-    (push ast-node (cdr ast-tree))
-    (if (string= (caddr token-list) "import")
-	(parse-imports token-list ast-tree)
-        token-list)))
+(defun parse-imports (tokenizer ast-tree)
+  (let ((token (current-token tokenizer)))
+    (if (string= token "import")
+	(let ((ast-node (parse-import tokenizer)))
+	  (if (not(null ast-node))
+	      (progn
+		(push-node ast-node ast-tree)
+		(advanze-token tokenizer)
+		(parse-imports tokenizer ast-tree))
+	      nil)))))
 
-(defun parse-class (token-list ast-tree)
-  (let* ((parameter-stream (parse-class-declaration token-list ast-tree)))
-	 ;;(class-body-stream (parse-class-param-list token-list ast-tree)))
-    ;;class-body-stream))
-    parameter-stream))
+(defun parse-import (tokenizer)
+  (let ((token (current-token tokenizer)))
+    (if (string= token "import")
+	(make-ast-node :import (advanze-token tokenizer))
+	nil)))
+
+(defun parse-class (tokenizer ast-tree)
+  (parse-class-declaration tokenizer ast-tree)
+  ast-tree)
     
 
-(defun parse-class-declaration (token-list ast-tree)
-  (let* ((class-modifiers (grab-tokens-until token-list "class"))
-	 (class-visibility-node (cons :class-visibility (cadr class-modifiers)))
-	 (token-list (nthcdr (car class-modifiers) token-list)))
-    (push class-visibility-node (cdr (last ast-tree)))
-    (let* ((class-name-node (cons :class-name (cadr token-list)))
-	   (class-paras-stream (parse-class-param-list (cdddr token-list) ast-tree)))
+(defun parse-class-declaration (tokenizer ast-tree)
+  (let* ((class-modifiers-node (make-ast-node :class-visibility (grab-tokens-until tokenizer "class")))
+	 (class-name-node (make-ast-node :class-name (advanze-token tokenizer)))
+	 (class-parameter-list (progn (advanze-token tokenizer)
+				      (advanze-token tokenizer)
+				      (parse-class-param-list tokenizer))))
+    ;;(push class-visibility-node (cdr (last ast-tree)))
+    (push-node class-modifiers-node ast-tree)
+    (push-node class-name-node ast-tree)
+    (push-node class-parameter-list ast-tree)
+    ast-tree))
+    ;;(let* ((class-name-node (cons :class-name (cadr token-list)))
+	;;   (class-paras-stream (parse-class-param-list (cdddr token-list) ast-tree)))
 	   ;;(token-list (nthcdr (+(car class-paras-stream)2) token-list)))
-      (push class-name-node (cdr (last ast-tree)))
-      token-list)))
+;;      (push class-name-node (cdr (last ast-tree)))
+  ;;    token-list)))
 
-(defun parse-class-param-list (token-list ast-tree)
-  (let* ((param-list (grab-tokens-until token-list ")"))
-	 (ast-node (cons :class-parameters (delete "," (cadr param-list) :test #'string=)))
-	 (token-list (nthcdr (+ (car param-list)2) token-list)))
-    (push ast-node (cdr (last ast-tree)))
-    token-list))
+(defun parse-class-param-list (tokenizer)
+  (let* ((param-list (grab-tokens-until tokenizer ")"))
+	 (ast-node (make-ast-node :class-parameters (delete "," param-list :test #'string=))))
+    ast-node))
 
-(defun grab-tokens-until (token-list end-word)
-  (loop for x in token-list
-		 until (string= x end-word)
-		 counting x into i
-		 collecting x into y
-		 finally (return (list i y))))
+(defun grab-tokens-until (tokenizer end-string)
+  (do ((token (current-token tokenizer) (advanze-token tokenizer))
+       (x ()))
+      ((string= token end-string) (nreverse x))
+    (push token x)))
 
-(defun build-param-list (token-string-list new-list)
-  (if (string-equal ")" (car token-string-list))
-      (cons (nreverse new-list )
-	    (parse-c-sharp-fn-basic-body (cdr token-string-list))) 
-      (let ((current-token (cadr token-string-list))
-	    (next-tokens (cddr token-string-list)))
-	(build-param-list (nthcdr 3 token-string-list) 
-			    (push (list current-token
-					(car next-tokens))
-				  new-list )))))
+(defun parse-function (tokenizer ast-tree))
 
-(defun parse-c-sharp-fn-basic-paras (token-string-list)
-  (build-param-list token-string-list
-		    (list )))
-
-(defun parse-c-sharp-fn-basic-body (token-string-list) 
-  (when (not(string-equal (car token-string-list) "{")) (error "body does not begin with {"))
-  (list 
-   (list-stmts (cdr token-string-list))))
-
-(defun list-stmts (token-string-list)
-  (let ((stmts-list ())
-	(stmt ()))
-    (dolist (token token-string-list) 
-      (if (string-equal token ";")
-	  (progn 
-	    (push (nreverse stmt) stmts-list)
-	    (setf stmt ()))
-	  (push token stmt)))
-  (nreverse stmts-list)))
+(defun parse-funcion-visibility (tokenizer ast-tree))

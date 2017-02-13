@@ -2,7 +2,7 @@
 
 (defpackage :tokenizer
   (:use :common-lisp)
-  (:export :tokenize-fn :add-length-to-strings))
+  (:export :tokenize-fn :add-length-to-strings :tokenizer-object))
 (in-package :tokenizer)
 ;;(tokenize-c-sharp-fn *code-test*)
 
@@ -70,3 +70,18 @@ var _newName = newName;
       (dolist (string-part rougly-splitted)
 	(when (not (is-empty-new-line string-part)) (add-new-token (string-trim '(#\Space #\Newline) string-part))))
       (nreverse new-list))))
+
+(defun tokenizer-object (token-list-org)
+  (let ((token-list token-list-org))
+    (flet ((current-token ()
+	     (car token-list))
+	   (peek-token ()
+	     (cadr token-list))
+	   (advanze-token ()
+	     (setf token-list (cdr token-list))
+	     (car token-list)))
+    (lambda (cmd)
+      (cond ((eq :current cmd) (current-token))
+	    ((eq :peek cmd) (peek-token))
+	    ((eq :advanze cmd) (advanze-token))
+	    (t (current-token)))))))
