@@ -26,11 +26,12 @@ import UnityEngine
 partial public class FactoryEconomy (BuildingEconomy, IGUI):
       private _playerGameObjectList as List
       public _playerGameObject as GameObject
+      _haveConceded as bool = false
 ")
 
 "
 _currentPlayerGUI as GuiScript
-      _haveConceded as bool = false
+      
       public LevelIsLoaded = false
       private final executeTurnString as string = \"executeTurn\"
  public def Start(container as List):
@@ -170,9 +171,9 @@ Field = Visibility String as Type : FieldBody
        (let ((token (current-token tokenizer)))
 	 (cond ((class-fn? token node-stack)
 		"fn")
-	       ((class-variable? token node-stack) 
+	       ((class-variable? tokenizer node-stack) 
 		(push-node (make-class-variable tokenizer node-stack) ast-tree)
-		(setf node-stack nil)
+		(setq node-stack nil)
 		(advanze-token tokenizer))
 	       ((eq (peek-token tokenizer) nil) "end finito")
 	       (t (progn
@@ -204,10 +205,14 @@ Field = Visibility String as Type : FieldBody
   (let ((vis-list (grab-tokens-until-fn tokenizer (lambda (x) (not (visibility? x))))))
     (make-ast-node :visibility vis-list)))
 
-(defun class-variable? (token node-stack)
-  (and (consp node-stack) 
-       (same-node-symbol (symbol-from-ast-node (car node-stack))
-			 :visibility))) 
+(defun class-variable? (tokenizer node-stack)
+  (let ((token (current-token tokenizer))
+	(peek (peek-token tokenizer)))
+    (or (and (not(consp node-stack))
+	     (match peek "as")) 
+	(and (consp node-stack) 
+	     (same-node-symbol (symbol-from-ast-node (car node-stack))
+			       :visibility))) ))
 
 (defun parse-class-variable (tokenizer ast-tree node-stack)
   (push-node (make-class-variable tokenizer node-stack) ast-tree)
@@ -220,9 +225,15 @@ Field = Visibility String as Type : FieldBody
   (let* ((name (current-token tokenizer))
 	 (type (progn
 		 (advanze-token tokenizer)
-		 (advanze-token tokenizer))))
-	 (make-ast-node :class-variable 
-	   (list (car node-stack)
-		 (make-ast-node :variable-name name)
-		 (make-ast-node :type type)))))
-  
+		 (advanze-token tokenizer)))
+	 (peek (peek-token tokenizer)))
+    (let ((node (make-ast-node :class-variable 
+		 (list (car node-stack)
+		       (make-ast-node :variable-name name)
+		       (make-ast-node :type type)))))
+      (if (match peek "=")
+	  (progn 
+	    (push-node (make-ast-node :value (advanze-token tokenizer)) node)
+	    node)
+	  node))))
+
