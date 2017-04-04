@@ -30,6 +30,7 @@ partial public class FactoryEconomy (BuildingEconomy, IGUI):
       _winningPlayer as TeamScript.PlayerNumberEnum
       private a as int = 3
       private b = 3
+      c = 4
 ")
 
 "
@@ -146,18 +147,12 @@ Field = Visibility String as Type : FieldBody
 	 (class-parameter-list (progn (advanze-token tokenizer)
 				      (advanze-token tokenizer)
 				      (parse-class-param-list tokenizer))))
-    ;;(push class-visibility-node (cdr (last ast-tree)))
     (push-node class-modifiers-node ast-tree)
     (push-node class-name-node ast-tree)
     (push-node class-parameter-list ast-tree)
     (advanze-token tokenizer)
     (advanze-token tokenizer)
     ast-tree))
-    ;;(let* ((class-name-node (cons :class-name (cadr token-list)))
-	;;   (class-paras-stream (parse-class-param-list (cdddr token-list) ast-tree)))
-	   ;;(token-list (nthcdr (+(car class-paras-stream)2) token-list)))
-;;      (push class-name-node (cdr (last ast-tree)))
-  ;;    token-list)))
 
 (defun parse-class-param-list (tokenizer)
   (let* ((param-list (grab-tokens-until tokenizer ")"))
@@ -174,8 +169,6 @@ Field = Visibility String as Type : FieldBody
     (push token x)))
 
 (defun parse-class-body (tokenizer ast-tree node-stack)
-  ;;(if (null node-stack)
-  ;;    (setf node-stack (list(parse-token-to-ast-node tokenizer))))
   (loop do 
        (let ((token (current-token tokenizer)))
 	 (cond ((class-fn? token node-stack)
@@ -190,7 +183,6 @@ Field = Visibility String as Type : FieldBody
 			(setf node-stack (list(parse-token-to-ast-node tokenizer)))
 			(push (parse-token-to-ast-node tokenizer) (cdr (last node-stack)))) ))))
        while (not(eq (peek-token tokenizer) nil))))
-	       ;;(parse-class-body tokenizer ast-tree node-stack))))))
 
 (defun node-stack-has-visibility-node? (node-stack)
   (and (consp node-stack) 
@@ -223,9 +215,8 @@ Field = Visibility String as Type : FieldBody
 (defun class-variable? (tokenizer node-stack)
   (let ((token (current-token tokenizer))
 	(peek (peek-token tokenizer)))
-    (or (and (not(consp node-stack))
-	     (match peek "as")) 
-	(node-stack-has-visibility-node? node-stack))))
+    (or (match peek "as") 
+	(match peek "="))))
 
 (defun parse-class-variable (tokenizer ast-tree node-stack)
   (push-node (make-class-variable tokenizer node-stack) ast-tree)
@@ -233,29 +224,31 @@ Field = Visibility String as Type : FieldBody
   (advanze-token tokenizer))
 
 (defun make-class-variable (tokenizer node-stack)
-  (if (not (match (peek-token tokenizer) "as"))
+  (if (not (or (match (peek-token tokenizer) "as")
+	       (match (peek-token tokenizer) "=")))
       "error parsing variable")
   (let* ((visibility (if (node-stack-has-visibility-node? node-stack)
 			 (get-visibility-node-from-node-stack node-stack)
 			 (make-ast-node :visibility nil)))
 	 (name (current-token tokenizer))
-	 (type (progn
-		 (advanze-token tokenizer)
-		 (advanze-token tokenizer)))
-	 (peek (peek-token tokenizer)))
-    (let ((node (make-ast-node :class-variable 
-			       (list visibility
-				     (make-ast-node :variable-name name)
-				     (make-ast-node :type type)))))
-      (if (match peek "=")
-	  (progn
-	    (advanze-token tokenizer)
-	    (advanze-token tokenizer)
-	    (step (push-node (expression tokenizer node-stack) node))
-	    ;;(push-node (make-ast-node :value (advanze-token tokenizer)) node)
-	    node)
-	  node))))
-
+	 (type (if (match (peek-token tokenizer) "as")
+		   (progn
+		     (advanze-token tokenizer)
+		     (advanze-token tokenizer)
+		     (current-token tokenizer))
+		   nil))
+	 (value (if (match (peek-token tokenizer) "=")
+		    (progn
+		      (advanze-token tokenizer)
+		      (advanze-token tokenizer)
+		      (current-token tokenizer));;node)
+		    nil)))
+    (make-ast-node :class-variable 
+		   (list visibility
+			 (make-ast-node :variable-name name)
+			 (make-ast-node :type type)
+			 (make-ast-node :value value)))))
+  
 (defmacro with-tokens (&body body) 
   `(let ((token (current-token tokenizer))
 	 (peek (peek-token tokenizer)))
