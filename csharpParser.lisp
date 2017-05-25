@@ -1,7 +1,5 @@
 (ql:quickload "cl-utilities")
 
-(defpackage :csharp-parser
-  (:use :common-lisp :tokenizer))
 (in-package :csharp-parser)
 
 (declaim (optimize (debug 3)))
@@ -14,9 +12,9 @@
 " 
 using UnityEngine;
 using UnityEngine;
-")
-"partial public class FactoryEconomy : BuildingEconomy, IGUI {}
-)"
+
+partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
+)
 
 (defparameter *code-test-full* 
 " 
@@ -34,22 +32,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 }
 ")
 
-"
-_currentPlayerGUI as GuiScript
-      
-      public LevelIsLoaded = false
-      private final executeTurnString as string = \"executeTurn\"
- public def Start(container as List):
-          return \"ArmyEconomy\" "
-(defun current-token (tokenizer)
-  (funcall tokenizer :current))
-
-(defun advanze-token (tokenizer)
-  (funcall tokenizer :advanze))
-
-(defun peek-token (tokenizer)
-  (funcall tokenizer :peek))
-  
 (defmacro with-token-and-peek (&body body) 
   `(let ((token (current-token tokenizer))
 	 (peek (peek-token tokenizer)))
@@ -59,26 +41,25 @@ _currentPlayerGUI as GuiScript
   `(let ((token (current-token tokenizer)))
      ,@body))
 
-(defun tokenize-with-symbols (string-to-tokenize)
-  (tokenizer:tokenizer-object 
-   (tokenizer:tokenize-fn string-to-tokenize
-			  (tokenizer:add-length-to-strings '("public"
-							     "class"
-							     "return"
-							     "partial"
-							     ";"
-							     "("
-							     ")"
-							     "{"
-							     "}"
-							     ","
-							     "\""
-							     "/"
-							     "\Return"
-							     "\LineFeed"
-							     "["
-							     "]")))))
-							    ;; ".")))))
+(defun tokenize-csharp-code (string-to-parse)
+  (tokenizer:tokenize-with-symbols '("public"
+				     "class"
+				     "return"
+				     "partial"
+				     ";"
+				     "("
+				     ")"
+				     "{"
+				     "}"
+				     ","
+				     "\""
+				     "/"
+				     "\Return"
+				     "\LineFeed"
+				     "["
+				     "]")
+				   string-to-parse))
+;; ".")))))
   
 (defun print-tokens (tokenizer)
   (do ((token (current-token tokenizer) (advanze-token tokenizer))
@@ -87,13 +68,16 @@ _currentPlayerGUI as GuiScript
     (push token x)))
 
 " Bnf for basic Boo parsing:
-File = Imports Class
-Imports = Import & Import
-Import = 'import' String 
+File = Using Class
+Imports = Using & Using
+Import = 'using' String stmtEnd 
+stmtEnd = ';' 
 
 Class = ClassDeclaration ( ClassParameters ) : ClassBody
-ClassDeclaration = partial? public? class String
-ClassParameters = String | String , ClassParameters
+ClassDeclaration = 'partial'? 'public'? class String
+ClassParameters = VariableDeclaration | VariableDeclaration , ClassParameters
+VaribleDeclaration = Type String
+Type = int | string | bool
 
 ClassBody = ClassVariable | Field | Function
 ClassVariable  = Visibility? String as String
@@ -128,19 +112,21 @@ Field = Visibility String as Type : FieldBody
 ;;    ))
    ast-tree))
 
-(defun parse-file (tokenizer ast-tree)
-  (parse-imports tokenizer ast-tree)
-  )
-;;(parse-class tokenizer ast-tree))
+(defun match-end (tokenizer) 
+  (match (advanze-token tokenizer) ";"))
 
-(defun parse-imports (tokenizer ast-tree)
+(defun parse-file (tokenizer ast-tree)
+  (parse-usings tokenizer ast-tree)
+  );;(parse-class tokenizer ast-tree))
+
+(defun parse-usings (tokenizer ast-tree)
   (let ((ast-node (parse-using tokenizer)))
     (if (not(null ast-node))
 	(progn
 	  (push-node ast-node ast-tree)
 	  (advanze-token tokenizer)
-	  (advanze-token tokenizer)
-	  (parse-imports tokenizer ast-tree))
+	  (match-end tokenizer)
+	  (parse-usings tokenizer ast-tree))
 	nil)))
 
 (defun parse-using (tokenizer)
