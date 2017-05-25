@@ -72,10 +72,12 @@ File = Using Class
 Imports = Using & Using
 Import = 'using' String stmtEnd 
 stmtEnd = ';' 
+blockStart = '{'
+blockClose = '}'
 
-Class = ClassDeclaration ( ClassParameters ) : ClassBody
-ClassDeclaration = 'partial'? 'public'? class String
-ClassParameters = VariableDeclaration | VariableDeclaration , ClassParameters
+Class = ClassDeclaration ClassBody 
+ClassDeclaration = 'partial'? 'public'? 'class' String ClassInheritance? 
+ClassInheritance = ':' String (, String)? 
 VaribleDeclaration = Type String
 Type = int | string | bool
 
@@ -106,6 +108,9 @@ Field = Visibility String as Type : FieldBody
 (defun match (token symbol)
   (string= token symbol))
 
+(defun match-adv (tokenizer symbol)
+  (match (advanze-token tokenizer) symbol))
+
 (defun parse-csharp (tokenizer)
   (let ((ast-tree (list(make-ast-node :file "name"))))
     (parse-file tokenizer ast-tree)
@@ -113,11 +118,11 @@ Field = Visibility String as Type : FieldBody
    ast-tree))
 
 (defun match-end (tokenizer) 
-  (match (advanze-token tokenizer) ";"))
+  (match-adv tokenizer ";"))
 
 (defun parse-file (tokenizer ast-tree)
   (parse-usings tokenizer ast-tree)
-  );;(parse-class tokenizer ast-tree))
+  (parse-class tokenizer ast-tree))
 
 (defun parse-usings (tokenizer ast-tree)
   (let ((ast-node (parse-using tokenizer)))
@@ -136,27 +141,44 @@ Field = Visibility String as Type : FieldBody
 	nil)))
 
 (defun parse-class (tokenizer ast-tree)
-  (parse-class-declaration tokenizer ast-tree)
-  (parse-class-body tokenizer ast-tree ()))
+  (parse-class-declaration tokenizer ast-tree))
+  ;;(parse-class-body tokenizer ast-tree ()))
     
+(defun block-start (tokenizer) 
+    (match-adv tokenizer "{"))
+
+(defun block-end (tokenizer) 
+    (match-adv tokenizer "}"))
 
 (defun parse-class-declaration (tokenizer ast-tree)
-  (let* ((class-modifiers-node (make-ast-node :class-visibility (grab-tokens-until tokenizer "class")))
-	 (class-name-node (make-ast-node :class-name (advanze-token tokenizer)))
-	 (class-parameter-list (progn (advanze-token tokenizer)
-				      (advanze-token tokenizer)
-				      (parse-class-param-list tokenizer))))
-    (push-node class-modifiers-node ast-tree)
-    (push-node class-name-node ast-tree)
-    (push-node class-parameter-list ast-tree)
-    (advanze-token tokenizer)
-    (advanze-token tokenizer)
-    ast-tree))
+  (let* ((class-declaration-node (make-ast-node :class-declaration ()))
+	 (class-modifiers-node (make-ast-node :class-visibility (grab-tokens-until tokenizer "class")))
+	 (class-name-node (make-ast-node :class-name (advanze-token tokenizer))))
+      (push-node class-modifiers-node class-declaration-node)
+      (push-node class-name-node class-declaration-node)
+      (push-node class-declaration-node ast-tree)
+      ;;(advanze-token tokenizer)
+      (when (not (block-start tokenizer))
+	(progn
+	  (advanze-token tokenizer)
+	  (let ((class-inheritance-node (make-ast-node 
+					 :class-inheritances 
+					 (grab-tokens-until-filtered tokenizer
+								     "{"
+								     ","))))
+	    (push-node class-inheritance-node class-declaration-node)))
+	ast-tree)))
 
 (defun parse-class-param-list (tokenizer)
   (let* ((param-list (grab-tokens-until tokenizer ")"))
 	 (ast-node (make-ast-node :class-parameters (delete "," param-list :test #'string=))))
     ast-node))
+
+(defun grab-tokens-until-filtered (tokenizer end-string seperator)
+  (delete seperator 
+	  (grab-tokens-until tokenizer end-string)
+	  :test
+	  #'string=))
 
 (defun grab-tokens-until (tokenizer end-string)
   (grab-tokens-until-fn tokenizer (lambda (x) (string= (current-token x) end-string))))
