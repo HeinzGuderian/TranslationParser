@@ -46,3 +46,10 @@
 	(tokenizer (intern (symbol-name 'tokenizer))))
     `(let ((,token (current-token ,tokenizer)))
        ,@body)))
+  
+(defun print-tokens (tokenizer)
+  (do ((token (current-token tokenizer) (advanze-token tokenizer))
+       (x ()))
+      ((funcall (lambda (x) (null (current-token x))) tokenizer) (nreverse x))
+    (push token x)))
+

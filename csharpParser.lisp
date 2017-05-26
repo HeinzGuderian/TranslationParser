@@ -16,6 +16,18 @@ using UnityEngine;
 partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 )
 
+(defparameter *code-test-class-simple* 
+" 
+using UnityEngine;
+using UnityEngine;
+
+partial public class FactoryEconomy : BuildingEconomy, IGUI 
+{
+ private int a;
+}"
+)
+
+
 (defparameter *code-test-full* 
 " 
 using UnityEngine;
@@ -51,12 +63,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 				     "]")
 				   string-to-parse))
 ;; ".")))))
-  
-(defun print-tokens (tokenizer)
-  (do ((token (current-token tokenizer) (advanze-token tokenizer))
-       (x ()))
-      ((funcall (lambda (x) (null (current-token x))) tokenizer) (nreverse x))
-    (push token x)))
 
 " Bnf for basic Boo parsing:
 File = Using Class
@@ -102,6 +108,9 @@ Field = Visibility String as Type : FieldBody
 (defun match-adv (tokenizer symbol)
   (match (advanze-token tokenizer) symbol))
 
+(defun match-cur (tokenizer symbol)
+  (match (current-token tokenizer) symbol))
+
 (defun parse-csharp (tokenizer)
   (let ((ast-tree (list(make-ast-node :file "name"))))
     (parse-file tokenizer ast-tree)
@@ -109,7 +118,28 @@ Field = Visibility String as Type : FieldBody
    ast-tree))
 
 (defun match-end (tokenizer) 
-  (match-adv tokenizer ";"))
+  (match-cur tokenizer ";"))
+    
+(defun block-start (tokenizer) 
+    (match-cur tokenizer "{"))
+
+(defun block-end (tokenizer) 
+    (match-cur tokenizer "}"))
+
+(defun grab-tokens-until-filtered (tokenizer end-string seperator)
+  (delete seperator 
+	  (grab-tokens-until tokenizer end-string)
+	  :test
+	  #'string=))
+
+(defun grab-tokens-until (tokenizer end-string)
+  (grab-tokens-until-fn tokenizer (lambda (x) (string= (current-token x) end-string))))
+
+(defun grab-tokens-until-fn (tokenizer end-fn)
+  (do ((token (current-token tokenizer) (advanze-token tokenizer))
+       (x ()))
+      ((funcall end-fn tokenizer) (nreverse x))
+    (push token x)))
 
 (defun parse-file (tokenizer ast-tree)
   (parse-usings tokenizer ast-tree)
@@ -132,14 +162,9 @@ Field = Visibility String as Type : FieldBody
 	nil)))
 
 (defun parse-class (tokenizer ast-tree)
-  (parse-class-declaration tokenizer ast-tree))
-  ;;(parse-class-body tokenizer ast-tree ()))
-    
-(defun block-start (tokenizer) 
-    (match-adv tokenizer "{"))
-
-(defun block-end (tokenizer) 
-    (match-adv tokenizer "}"))
+  (parse-class-declaration tokenizer ast-tree)
+  (advanze-token tokenizer))
+;;  (parse-class-body tokenizer ast-tree ()))
 
 (defun parse-class-declaration (tokenizer ast-tree)
   (let* ((class-declaration-node (make-ast-node :class-declaration ()))
@@ -148,7 +173,7 @@ Field = Visibility String as Type : FieldBody
       (push-node class-modifiers-node class-declaration-node)
       (push-node class-name-node class-declaration-node)
       (push-node class-declaration-node ast-tree)
-      ;;(advanze-token tokenizer)
+      (advanze-token tokenizer)
       (when (not (block-start tokenizer))
 	(progn
 	  (advanze-token tokenizer)
@@ -164,21 +189,6 @@ Field = Visibility String as Type : FieldBody
   (let* ((param-list (grab-tokens-until tokenizer ")"))
 	 (ast-node (make-ast-node :class-parameters (delete "," param-list :test #'string=))))
     ast-node))
-
-(defun grab-tokens-until-filtered (tokenizer end-string seperator)
-  (delete seperator 
-	  (grab-tokens-until tokenizer end-string)
-	  :test
-	  #'string=))
-
-(defun grab-tokens-until (tokenizer end-string)
-  (grab-tokens-until-fn tokenizer (lambda (x) (string= (current-token x) end-string))))
-
-(defun grab-tokens-until-fn (tokenizer end-fn)
-  (do ((token (current-token tokenizer) (advanze-token tokenizer))
-       (x ()))
-      ((funcall end-fn tokenizer) (nreverse x))
-    (push token x)))
 
 (defun parse-class-body (tokenizer ast-tree node-stack)
   (loop do 
