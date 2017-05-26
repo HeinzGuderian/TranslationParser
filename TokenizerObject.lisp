@@ -32,3 +32,17 @@
   (tokenizer-object 
    (tokenize-fn string-to-tokenize
 			  (add-length-to-strings symbol-table))))
+
+(defmacro with-token-and-peek (&body body) 
+  (let ((token (intern (symbol-name 'token)))
+	(peek (intern (symbol-name 'peek)))
+	(tokenizer (intern (symbol-name 'tokenizer))))
+    `(let ((,token (current-token ,tokenizer))
+	   (,peek (peek-token ,tokenizer)))
+       ,@body)))
+
+(defmacro with-token (&body body) 
+  (let ((token (intern (symbol-name 'token)))
+	(tokenizer (intern (symbol-name 'tokenizer))))
+    `(let ((,token (current-token ,tokenizer)))
+       ,@body)))

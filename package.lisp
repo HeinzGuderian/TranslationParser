@@ -3,7 +3,9 @@
   (:export :tokenize-with-symbols 
 	   :current-token 
 	   :advanze-token 
-	   :peek-token))
+	   :peek-token
+	   :with-token-and-peek
+	   :with-token))
 
 (defpackage :csharp-parser
   (:use :common-lisp :tokenizer))

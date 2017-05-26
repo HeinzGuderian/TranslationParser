@@ -32,15 +32,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 }
 ")
 
-(defmacro with-token-and-peek (&body body) 
-  `(let ((token (current-token tokenizer))
-	 (peek (peek-token tokenizer)))
-     ,@body))
-
-(defmacro with-token (&body body) 
-  `(let ((token (current-token tokenizer)))
-     ,@body))
-
 (defun tokenize-csharp-code (string-to-parse)
   (tokenizer:tokenize-with-symbols '("public"
 				     "class"
@@ -285,7 +276,7 @@ Field = Visibility String as Type : FieldBody
       t))
 
 (defun make-identifier-node (tokenizer node-stack)
-  (with-token-and-peek (make-ast-node :identifier token)))
+  (with-token-and-peek tokenizer (make-ast-node :identifier token)))
 
 (defun is-bool? (token)
   (if (or (match token "true")
