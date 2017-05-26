@@ -4,7 +4,7 @@
 
 (declaim (optimize (debug 3)))
 ;; (in-package :csharp-parser)
-;; (defparameter test (parse-csharp (tokenize-with-symbols *code-test-class*)))
+;; (defparameter test (parse-csharp (tokenize-csharp-code *code-test-class*)))
 (defparameter *code-test* 
 "public void Start(container as List){
      return \"ArmyEconomy\";} ")

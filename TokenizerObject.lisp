@@ -29,6 +29,6 @@
 	  string-list))
 
 (defun tokenize-with-symbols (symbol-table string-to-tokenize)
-  (tokenizer:tokenizer-object 
-   (tokenizer:tokenize-fn string-to-tokenize
-			  (tokenizer:add-length-to-strings symbol-table))))
+  (tokenizer-object 
+   (tokenize-fn string-to-tokenize
+			  (add-length-to-strings symbol-table))))
