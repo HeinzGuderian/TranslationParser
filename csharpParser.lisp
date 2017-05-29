@@ -87,44 +87,20 @@ Field = Visibility String as Type : FieldBody
 
 "
 
-(defun make-ast-node (symbol data)
-  (cons symbol data))
-
-(defun push-node (node tree)
-  (push node (cdr (last tree))))
-
-(defun symbol-from-ast-node (node)
-  (car node))
-
-(defun data-from-ast-node (node)
-  (cdr node))
-
-(defun same-node-symbol (sym1 sym2)
-  (eq sym1 sym2))
-
-(defun match (token symbol)
-  (string= token symbol))
-
 (defun match-adv (tokenizer symbol)
   (match (advanze-token tokenizer) symbol))
 
 (defun match-cur (tokenizer symbol)
   (match (current-token tokenizer) symbol))
 
-(defun parse-csharp (tokenizer)
-  (let ((ast-tree (list(make-ast-node :file "name"))))
-    (parse-file tokenizer ast-tree)
-;;    ))
-   ast-tree))
-
 (defun match-end (tokenizer) 
   (match-cur tokenizer ";"))
     
 (defun block-start (tokenizer) 
-    (match-cur tokenizer "{"))
+  (match-cur tokenizer "{"))
 
 (defun block-end (tokenizer) 
-    (match-cur tokenizer "}"))
+  (match-cur tokenizer "}"))
 
 (defun grab-tokens-until-filtered (tokenizer end-string seperator)
   (delete seperator 
@@ -140,6 +116,12 @@ Field = Visibility String as Type : FieldBody
        (x ()))
       ((funcall end-fn tokenizer) (nreverse x))
     (push token x)))
+
+(defun parse-csharp (tokenizer)
+  (let ((ast-tree (list(make-ast-node :file "name"))))
+    (parse-file tokenizer ast-tree)
+;;    ))
+   ast-tree))
 
 (defun parse-file (tokenizer ast-tree)
   (parse-usings tokenizer ast-tree)
@@ -163,8 +145,8 @@ Field = Visibility String as Type : FieldBody
 
 (defun parse-class (tokenizer ast-tree)
   (parse-class-declaration tokenizer ast-tree)
-  (advanze-token tokenizer))
-;;  (parse-class-body tokenizer ast-tree ()))
+  (advanze-token tokenizer)
+  (parse-class-body tokenizer ast-tree ()))
 
 (defun parse-class-declaration (tokenizer ast-tree)
   (let* ((class-declaration-node (make-ast-node :class-declaration ()))
@@ -193,8 +175,8 @@ Field = Visibility String as Type : FieldBody
 (defun parse-class-body (tokenizer ast-tree node-stack)
   (loop do 
        (let ((token (current-token tokenizer)))
-	 (cond ((class-fn? token node-stack)
-		"fn")
+	 (cond ;;((class-fn? token node-stack)
+	         ;;"fn")
 	       ((class-variable? tokenizer node-stack) 
 		(push-node (make-class-variable tokenizer node-stack) ast-tree)
 		(setq node-stack nil)
