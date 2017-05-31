@@ -18,4 +18,4 @@
 (defun match (token symbol)
   (string= token symbol))
 
-(export-all-symbols :ast-node-space)
+(export-all-symbols :ast-node-space)w
