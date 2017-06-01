@@ -10,7 +10,10 @@
 	   :peek-token
 	   :with-token-and-peek
 	   :with-token
-	   :print-tokens))
+	   :print-tokens
+	   :grab-tokens-until
+	   :grab-tokens-until-fn
+	   :grab-tokens-until-filtered))
 
 (defpackage :ast-node-space
   (:use :code-generator-utils-space :common-lisp)

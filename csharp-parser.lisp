@@ -102,21 +102,6 @@ Field = Visibility String as Type : FieldBody
 (defun block-end (tokenizer) 
   (match-cur tokenizer "}"))
 
-(defun grab-tokens-until-filtered (tokenizer end-string seperator)
-  (delete seperator 
-	  (grab-tokens-until tokenizer end-string)
-	  :test
-	  #'string=))
-
-(defun grab-tokens-until (tokenizer end-string)
-  (grab-tokens-until-fn tokenizer (lambda (x) (string= (current-token x) end-string))))
-
-(defun grab-tokens-until-fn (tokenizer end-fn)
-  (do ((token (current-token tokenizer) (advanze-token tokenizer))
-       (x ()))
-      ((funcall end-fn tokenizer) (nreverse x))
-    (push token x)))
-
 (defun parse-csharp (tokenizer)
   (let ((ast-tree (list(make-ast-node :file "name"))))
     (parse-file tokenizer ast-tree)
