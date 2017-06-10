@@ -18,4 +18,10 @@
 (defun match (token symbol)
   (string= token symbol))
 
+(defun match-adv (tokenizer symbol)
+  (match (advanze-token tokenizer) symbol))
+
+(defun match-cur (tokenizer symbol)
+  (match (current-token tokenizer) symbol))
+
 (export-all-symbols :ast-node-space)

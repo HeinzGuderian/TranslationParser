@@ -1,49 +1,5 @@
 (ql:quickload "cl-utilities")
 
-(in-package :csharp-parser)
-
-(declaim (optimize (debug 3)))
-;; (in-package :csharp-parser)
-;; (defparameter test (parse-csharp (tokenize-csharp-code *code-test-class*)))
-(defparameter *code-test* 
-"public void Start(container as List){
-     return \"ArmyEconomy\";} ")
-(defparameter *code-test-class* 
-" 
-using UnityEngine;
-using UnityEngine;
-
-partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
-)
-
-(defparameter *code-test-class-simple* 
-" 
-using UnityEngine;
-using UnityEngine;
-
-partial public class FactoryEconomy : BuildingEconomy, IGUI 
-{
- private int a;
-}"
-)
-
-
-(defparameter *code-test-full* 
-" 
-using UnityEngine;
-using UnityEngine;
-
-partial public class FactoryEconomy : BuildingEconomy, IGUI {
-      private List<int> _playerGameObjectList;
-      public GameObject _playerGameObject;
-      bool _haveConceded = false;
-      TeamScript.PlayerNumberEnum _winningPlayer;
-      private int a = 3;
-      private int b = 3;
-      var b = 2;
-}
-")
-
 (defun tokenize-csharp-code (string-to-parse)
   (tokenizer:tokenize-with-symbols '("public"
 				     "class"
@@ -86,12 +42,6 @@ private static final
 Field = Visibility String as Type : FieldBody
 
 "
-
-(defun match-adv (tokenizer symbol)
-  (match (advanze-token tokenizer) symbol))
-
-(defun match-cur (tokenizer symbol)
-  (match (current-token tokenizer) symbol))
 
 (defun match-end (tokenizer) 
   (match-cur tokenizer ";"))
@@ -160,17 +110,22 @@ Field = Visibility String as Type : FieldBody
 (defun parse-class-body (tokenizer ast-tree node-stack)
   (loop do 
        (let ((token (current-token tokenizer)))
+	 (print token)
 	 (cond ;;((class-fn? token node-stack)
 	         ;;"fn")
 	       ((class-variable? tokenizer node-stack) 
 		(push-node (make-class-variable tokenizer node-stack) ast-tree)
 		(setq node-stack nil)
 		(advanze-token tokenizer))
-	       ((eq (peek-token tokenizer) nil) "end finito")
+	       ((eq (peek-token tokenizer) nil) (print "end finito"))
 	       (t (progn
+		    (print "t")
 		    (if (eq nil node-stack)
-			(setf node-stack (list(parse-token-to-ast-node tokenizer)))
-			(push (parse-token-to-ast-node tokenizer) (cdr (last node-stack)))) ))))
+			(setf node-stack 
+			      (list(parse-token-to-ast-node tokenizer)))
+			(push (parse-token-to-ast-node tokenizer) 
+			      (cdr (last node-stack))))
+		    (advanze-token tokenizer)))))
        while (not(eq (peek-token tokenizer) nil))))
 
 (defun node-stack-has-visibility-node? (node-stack)
@@ -202,8 +157,7 @@ Field = Visibility String as Type : FieldBody
     (make-ast-node :visibility vis-list)))
 
 (defun class-variable? (tokenizer node-stack)
-  (let ((token (current-token tokenizer))
-	(peek (peek-token tokenizer)))
+  (with-token-and-peek
     (or (match peek "as") 
 	(match peek "="))))
 
