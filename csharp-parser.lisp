@@ -172,11 +172,8 @@ Field = Visibility String as Type : FieldBody
 	 (value (if (match (peek-token tokenizer) "=")
 		    (progn
 		      (advanze-token tokenizer)
-		      (advanze-token tokenizer)
-		      (current-token tokenizer))
+		      (advanze-token tokenizer))
 		    nil)))
-    
-	 (print node-stack)
     (make-ast-node :class-variable 
 		   (list visibility-node
 			 (make-ast-node :variable-name name)

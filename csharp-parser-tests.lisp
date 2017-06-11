@@ -17,29 +17,35 @@ using UnityEngine;
 partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 )
 
-(defparameter *code-test-class-simple* 
+(defparameter *code-test-variables-simple* 
 " 
 using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI 
 {
+ int c;
  private int a;
+ private int b = 2;
 }"
 )
 
-(defparameter *code-test-full* 
+(defparameter *code-test-variables-advanced* 
 " 
 using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
-      private List<int> _playerGameObjectList;
       public GameObject _playerGameObject;
-      bool _haveConceded = false;
       TeamScript.PlayerNumberEnum _winningPlayer;
+}
+")
+
+"
+
+      private List<int> _playerGameObjectList;
+      bool _haveConceded = false;
       private int a = 3;
       private int b = 3;
       var b = 2;
-}
-")
+"
