@@ -38,6 +38,7 @@ using UnityEngine;
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
       public GameObject _playerGameObject;
       TeamScript.PlayerNumberEnum _winningPlayer;
+      private int[] d;
 }
 ")
 

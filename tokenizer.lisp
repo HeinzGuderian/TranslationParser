@@ -1,5 +1,3 @@
-(ql:quickload "cl-utilities")
-
 (in-package :tokenizer)
 
 (defmacro abbrev (short long)

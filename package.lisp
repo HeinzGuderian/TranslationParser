@@ -22,5 +22,6 @@
 ;;	   :symbol-from-ast-node :data-from-ast-node))
 
 (defpackage :csharp-parser
-  (:use :common-lisp :code-generator-utils-space :tokenizer
-	:ast-node-space))
+  (:use :common-lisp :code-generator-utils-space :tokenizer	:ast-node-space)
+  (:export :tokenize-csharp-code
+		:parse-csharp))
