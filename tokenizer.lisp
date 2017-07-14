@@ -19,7 +19,7 @@
       (return (values is-found (+ is-found(get-token-length token-part))))))))
 
 (defun tokenize-fn (string-to-tokenize get-tokens)
-  (let ((rougly-splitted (split-if (lambda (x) (or (equal x #\Newline)(equal x #\Space))) string-to-tokenize :remove-empty-subseqs t))
+  (let ((rougly-splitted (split-if (lambda (x) (or (equal x #\Newline)(equal x #\Space) (equal x #\linefeed) (equal x #\return))) string-to-tokenize :remove-empty-subseqs t))
 	(new-list ()))
     (labels ((add-new-token (string-part)  
 	       ;;(labels ((push-and-add (string-part )))
