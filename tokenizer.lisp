@@ -33,8 +33,9 @@
 			   (push (subseq string-part 0 start-index) new-list)
 			   (add-new-token (subseq string-part start-index))))
 		     (push string-part new-list))))
-	     (is-empty-new-line (string-to-test) (string-equal "" (string-trim '(#\Space #\Newline) string-to-test))))
+	     (trim-token (string-to-trim) (string-trim '(#\Space #\Newline) string-to-trim))
+	     (is-empty-new-line (string-to-test) (string-equal "" (trim-token string-to-test))))
       (dolist (string-part rougly-splitted)
-	(when (not (is-empty-new-line string-part)) (add-new-token (string-trim '(#\Space #\Newline) string-part))))
+	(when (not (is-empty-new-line string-part)) (add-new-token (trim-token string-part))))
       (nreverse new-list))))
 
