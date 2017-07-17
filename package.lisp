@@ -13,7 +13,8 @@
 	   :print-tokens
 	   :grab-tokens-until
 	   :grab-tokens-until-fn
-	   :grab-tokens-until-filtered))
+	   :grab-tokens-until-filtered
+	   :match-token-list))
 
 (defpackage :ast-node-space
   (:use :common-lisp :code-generator-utils-space :tokenizer)
