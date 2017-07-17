@@ -4,3 +4,17 @@
     (let ((pack (find-package package-symbol)))
       (do-all-symbols (sym pack) 
 	(when (eql (symbol-package sym) pack) (export sym)))))
+
+(defun simple-list-identical? (list1 list2 &optional (test-fn #'equal))
+  (labels ((recurse-check (list-1 list-2)
+	   (if (funcall test-fn (car list-1)
+			(car list-2))
+	       (if (and (null (cdr list-1))
+			(null (cdr list-2)))
+		   t
+		   (recurse-check (cdr list-1) (cdr list-2)))
+	       nil)))
+    (if (equal (list-length list1)
+	       (list-length list2))
+	(recurse-check list1 list2)
+	nil)))

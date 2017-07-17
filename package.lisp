@@ -1,6 +1,7 @@
 (defpackage :code-generator-utils-space
   (:use :common-lisp)
-  (:export :export-all-symbols))
+  (:export :export-all-symbols
+	   :simple-list-identical?))
 
 (defpackage :tokenizer
   (:use :common-lisp :code-generator-utils-space)
