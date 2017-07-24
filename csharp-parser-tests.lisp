@@ -7,7 +7,8 @@
 ;; command for generating test matches (print-tokens (tokenize-csharp-code *code-test-variables-advanced* ))
 ;; (print-tokens (tokenize-csharp-code *code-test-variables-simple* ))
 ;; (parse-csharp (tokenize-csharp-code *code-test-variables-simple*))
-;; (match-shallow-ast-node (cadr(cadddr(parse-csharp(tokenize-csharp-code *code-test-variables-advanced*)))) 'ast-node-space::class-visibility (list "partial" "public" ))
+
+;;(match-shallow-ast-node (cadr(cadddr(parse-csharp(tokenize-csharp-code *code-test-variables-advanced*)))) '(class-visibility "partial" "public"))
 
 (defparameter *code-test* 
 "public void Start(container as List){
@@ -24,7 +25,9 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 )
 
 (defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "a" ";" "private" "int" "b" "=" "2" ";" "}" ))
+;;((FILE . "name") (USING . "UnityEngine") (USING . "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME . "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME . "c") (TYPE . "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY . "private") (VARIABLE-NAME . "a") (TYPE . "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY . "private") (VARIABLE-NAME . "b") (TYPE . "int") (VALUE . "2")))
 
+;;(match-shallow-ast-node (parse-csharp(tokenize-csharp-code *code-test-variables-simple*)) '((FILE . "name") (USING . "UnityEngine") (USING . "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME . "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME . "c") (TYPE . "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY . "private") (VARIABLE-NAME . "a") (TYPE . "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY . "private") (VARIABLE-NAME . "b") (TYPE . "int") (VALUE . "2"))))
 (defparameter *code-test-variables-simple* 
 " 
 using UnityEngine;

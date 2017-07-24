@@ -18,3 +18,9 @@
 	       (list-length list2))
 	(recurse-check list1 list2)
 	nil)))
+
+(defun dotted-pair? (test-list)
+  (let ((sec (cdr test-list)))
+    (and (consp test-list)
+	 (not (null sec))
+	 (null (consp (cdr test-list))))))
