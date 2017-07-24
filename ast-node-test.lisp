@@ -7,3 +7,5 @@
 	 (if (consp node-data)
 	     (code-generator-utils-space:simple-list-identical? value node-data)
 	     (funcall test-fn value node-data)))))
+
+(export-all-symbols :ast-node-space)

@@ -5,6 +5,9 @@
 ;; (in-package :csharp-parser)
 ;; (defparameter test (parse-csharp (tokenize-csharp-code *code-test-class*)))
 ;; command for generating test matches (print-tokens (tokenize-csharp-code *code-test-variables-advanced* ))
+;; (print-tokens (tokenize-csharp-code *code-test-variables-simple* ))
+;; (parse-csharp (tokenize-csharp-code *code-test-variables-simple*))
+;; (match-shallow-ast-node (cadr(cadddr(parse-csharp(tokenize-csharp-code *code-test-variables-advanced*)))) 'ast-node-space::class-visibility (list "partial" "public" ))
 
 (defparameter *code-test* 
 "public void Start(container as List){

@@ -7,5 +7,6 @@
 	       (:file "tokenizer-test-system")
 	       (:file "code-generator-utils")
 	       (:file "ast-node")
+	       (:file "ast-node-test")
 	       (:file "csharp-parser")
 	       (:file "csharp-parser-tests")))
