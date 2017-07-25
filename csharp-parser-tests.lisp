@@ -25,9 +25,9 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 )
 
 (defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "a" ";" "private" "int" "b" "=" "2" ";" "}" ))
-;;((FILE . "name") (USING . "UnityEngine") (USING . "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME . "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME . "c") (TYPE . "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY . "private") (VARIABLE-NAME . "a") (TYPE . "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY . "private") (VARIABLE-NAME . "b") (TYPE . "int") (VALUE . "2")))
+;;((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "c") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VALUE "2")))
 
-;;(match-shallow-ast-node (parse-csharp(tokenize-csharp-code *code-test-variables-simple*)) '((FILE . "name") (USING . "UnityEngine") (USING . "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME . "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME . "c") (TYPE . "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY . "private") (VARIABLE-NAME . "a") (TYPE . "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY . "private") (VARIABLE-NAME . "b") (TYPE . "int") (VALUE . "2"))))
+;;(test-ast-tree (parse-csharp(tokenize-csharp-code *code-test-variables-simple*)) '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "c") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VALUE "2"))))
 (defparameter *code-test-variables-simple* 
 " 
 using UnityEngine;

@@ -1,7 +1,11 @@
 (in-package :ast-node-space)
 
 (defun make-ast-node (symbol data)
-  (cons (make-ast-symbol symbol) data))
+  (if (null data)
+      (list (make-ast-symbol symbol))
+      (if (consp data)
+	  (cons (make-ast-symbol symbol) data)
+	  (cons (make-ast-symbol symbol) (list data)))))
 
 (defun push-node (node tree)
       (push node (cdr (last tree))))
