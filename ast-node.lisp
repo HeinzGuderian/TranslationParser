@@ -8,7 +8,7 @@
 	  (cons (make-ast-symbol symbol) (list data)))))
 
 (defun push-node (node tree)
-      (push node (cdr (last tree))))
+  (push node (cdr (last tree))))
 
 (defun symbol-from-ast-node (node)
   (car node))
@@ -18,6 +18,9 @@
 
 (defun same-node-symbol? (sym1 sym2)
   (eq sym1 sym2))
+
+(defun ast-node-edge-node? (node)
+  (not (every #'consp (data-from-ast-node node))))
 
 (defun match (token symbol)
   (string= token symbol))
@@ -48,7 +51,6 @@
 (defun node-stack-has-type-node? (node-stack)
   (node-stack-has-symbol-node? node-stack (make-ast-symbol "type")))
 
-
 (defun find-symbol-in-stack (node-stack symbol)
   (find symbol node-stack :test #'same-node-symbol? :key #'symbol-from-ast-node))
 
@@ -58,5 +60,38 @@
 (defun get-type-node-from-node-stack (node-stack)
   (find-symbol-in-stack node-stack (make-ast-symbol "type")))
 
+(defun create-ast-walk-node (return-node continue-fn)
+  (cons return-node continue-fn))
 
-(export-all-symbols :ast-node-space)
+(defun access-walk-node (walk-node)
+  (car walk-node))
+
+(defun next-walk-node (walk-node)
+  (funcall (cdr walk-node)))
+
+(defun walk-collect-all-ast-nodes (ast-tree)
+  (loop for x = (walk-ast-tree-dfs ast-tree) then (next-walk-node x) when (not(null(access-walk-node x))) collecting (access-walk-node x ) until (null (access-walk-node x))) )
+
+(defun walk-ast-tree-dfs (tokenized-tree)
+  (labels ((add-continue-fn (continue-fn-list new-continue-fn)
+	     (if (null continue-fn-list)
+		 (list new-continue-fn)
+		 (append continue-fn-list new-continue-fn)))
+	   (return-continue-fn (tree fn-list)
+	     (lambda () (rec-test tree fn-list)))
+	   (rec-test (tok-rec-tree continue-fns)
+	     (if (null tok-rec-tree) ;; end of tree?
+		 (if (null continue-fns)
+		     nil
+		     (funcall continue-fns))
+		 (let* ((tok-node (car tok-rec-tree))
+			(is-tok-node-edge-node (ast-node-edge-node? tok-node)))
+		   (print tok-node)
+		   (if is-tok-node-edge-node
+		       (cons tok-node (return-continue-fn (cdr tok-rec-tree)
+							    continue-fns))
+		       (cons tok-node (return-continue-fn (data-from-ast-node tok-node)
+							    (return-continue-fn (cdr tok-rec-tree) continue-fns))))))))
+    (rec-test tokenized-tree nil)))
+
+  

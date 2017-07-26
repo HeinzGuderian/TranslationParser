@@ -20,9 +20,15 @@
 
 (defpackage :ast-node-space
   (:use :common-lisp :code-generator-utils-space :tokenizer)
-  )
-  ;;(:export :make-ast-node :push-node :match
-;;	   :symbol-from-ast-node :data-from-ast-node))
+  (:export :make-ast-node :push-node :match :symbol-from-ast-node
+	   :data-from-ast-node :same-node-symbol? :ast-node-edge-node?
+	   :match :match-adv :match-cur :make-ast-symbol
+	   :node-stack-has-symbol-node? :node-stack-has-visibility-node?
+	   :node-stack-has-type-node? :find-symbol-in-stack
+	   :get-visibility-node-from-node-stack :get-type-node-from-node-stack
+	   :create-ast-walk-node :access-walk-node :next-walk-node
+	   :walk-collect-all-ast-nodes :walk-ast-tree-dfs
+	   :match-shallow-ast-node :test-ast-tree))
 
 (defpackage :csharp-parser
   (:use :common-lisp :code-generator-utils-space :tokenizer	:ast-node-space)

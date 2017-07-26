@@ -43,4 +43,3 @@
 			   nil))))))
     (rec-test tokenized-tree test-tree)))
 
-(export-all-symbols :ast-node-space)
