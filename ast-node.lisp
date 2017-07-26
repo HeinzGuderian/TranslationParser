@@ -73,25 +73,21 @@
   (loop for x = (walk-ast-tree-dfs ast-tree) then (next-walk-node x) when (not(null(access-walk-node x))) collecting (access-walk-node x ) until (null (access-walk-node x))) )
 
 (defun walk-ast-tree-dfs (tokenized-tree)
-  (labels ((add-continue-fn (continue-fn-list new-continue-fn)
-	     (if (null continue-fn-list)
-		 (list new-continue-fn)
-		 (append continue-fn-list new-continue-fn)))
-	   (return-continue-fn (tree fn-list)
+  (labels ((return-continue-fn (tree fn-list)
 	     (lambda () (rec-test tree fn-list)))
 	   (rec-test (tok-rec-tree continue-fns)
-	     (if (null tok-rec-tree) ;; end of tree?
+	     (if (null tok-rec-tree) ; end of tree?
 		 (if (null continue-fns)
 		     nil
 		     (funcall continue-fns))
 		 (let* ((tok-node (car tok-rec-tree))
 			(is-tok-node-edge-node (ast-node-edge-node? tok-node)))
-		   (print tok-node)
+		   ;(print tok-node)
 		   (if is-tok-node-edge-node
 		       (cons tok-node (return-continue-fn (cdr tok-rec-tree)
-							    continue-fns))
+							  continue-fns))
 		       (cons tok-node (return-continue-fn (data-from-ast-node tok-node)
-							    (return-continue-fn (cdr tok-rec-tree) continue-fns))))))))
+							  (return-continue-fn (cdr tok-rec-tree) continue-fns))))))))
     (rec-test tokenized-tree nil)))
 
   

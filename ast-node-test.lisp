@@ -17,29 +17,23 @@
   (labels ((any-but-not-equal (t1 t2)
 	     (and (or t1 t2)
 		  (not (equal t1 t2))))
-	   (edge-node? (node-test)
-	     (not (every #'consp node-test)))
-	   (rec-test (tok-rec-tree test-rec-tree)
-	     (if (or (null tok-rec-tree) ;; end of tree?
-		     (null test-rec-tree))
-		 t
-		 (let* ((tok-node (car tok-rec-tree))
-			(test-node (car test-rec-tree))
-			(is-tok-node-edge-node (edge-node? tok-node))
-			(is-test-node-edge-node (edge-node? test-node)))
-		   (print tok-node)
-		   (print test-node)
-		   (if (any-but-not-equal is-tok-node-edge-node
-					  is-test-node-edge-node) ;;basic chek that they are the same type of node
-		       nil
-		       (if (or (and (and is-tok-node-edge-node
-					 is-test-node-edge-node)
-				    (and (match-shallow-ast-node tok-node test-node)))
-			       (and (not(and is-tok-node-edge-node
-					     is-test-node-edge-node))
-				    (every (lambda (x) (not (null x)))
-					   (mapcar (lambda (x y) (rec-test x y)) (cdar tok-rec-tree) (cdar test-rec-tree)))))
-			   (rec-test (cdr tok-rec-tree) (cdr test-rec-tree))
-			   nil))))))
-    (rec-test tokenized-tree test-tree)))
-
+	   (rec-test (walk-tok walk-test)
+	     (if (any-but-not-equal (null walk-tok) (null walk-test))
+		 nil
+		 (if (and (null walk-tok) ;; end of tree?
+			  (null walk-test))
+		     t
+		     (let* ((tok-node (access-walk-node walk-tok))
+			    (test-node (access-walk-node walk-test))
+			    (is-tok-node-edge-node (ast-node-edge-node? tok-node))
+			    (is-test-node-edge-node (ast-node-edge-node? test-node)))
+		       (if (any-but-not-equal is-tok-node-edge-node
+					      is-test-node-edge-node) ;basic check that they are the same type of node
+			   nil
+			   (if (and is-tok-node-edge-node
+				    is-test-node-edge-node)
+			       (if (match-shallow-ast-node tok-node test-node)
+				   (rec-test (next-walk-node walk-tok) (next-walk-node walk-test))
+				   nil)
+			       (rec-test (next-walk-node walk-tok) (next-walk-node walk-test)))))))))
+    (rec-test (walk-ast-tree-dfs tokenized-tree) (walk-ast-tree-dfs test-tree))))
