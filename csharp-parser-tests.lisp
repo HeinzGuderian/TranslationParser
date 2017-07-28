@@ -47,6 +47,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI
 
 (defparameter *code-test-variables-advanced-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "public" "GameObject" "_playerGameObject" ";" "TeamScript.PlayerNumberEnum" "_winningPlayer" ";" "private" "int" "[" "]" "d" ";" "}"))
 
+(defparameter *code-test-variables-advanced-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "public") (VARIABLE-NAME "_playerGameObject") (TYPE "GameObject") (VALUE)) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "_winningPlayer") (TYPE "TeamScript.PlayerNumberEnum") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "d") (TYPE "int") (VALUE))) )
+
 (defparameter *code-test-variables-advanced* 
 " 
 using UnityEngine;
@@ -72,7 +74,9 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
   (let* ((parse-code (lambda (code) (parse-csharp(tokenize-csharp-code code))))
 	 (test-ast-tree (lambda (source test-tree) (test-ast-tree (funcall parse-code source)
 								  test-tree))))
-    (and (funcall test-ast-tree *code-test-class* *code-test-class-ast-tree*))))
+    (and (funcall test-ast-tree *code-test-class* *code-test-class-ast-tree*)
+	 (funcall test-ast-tree *code-test-variables-simple* *code-test-variables-simple-ast-tree*)
+	 (funcall test-ast-tree *code-test-variables-advanced* *code-test-variables-advanced-ast-tree* ))))
 
 "
 
