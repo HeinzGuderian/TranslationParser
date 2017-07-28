@@ -16,6 +16,7 @@
 
 
 (defparameter *code-test-class-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "}"))
+(defparameter *code-test-class-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI"))))
 (defparameter *code-test-class* 
 " 
 using UnityEngine;
@@ -25,7 +26,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 )
 
 (defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "a" ";" "private" "int" "b" "=" "2" ";" "}" ))
-;;((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "c") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VALUE "2")))
+
+(defparameter *code-test-variables-simple-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "c") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VALUE "2"))))
 
 ;;(test-ast-tree (parse-csharp(tokenize-csharp-code *code-test-variables-simple*)) '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "c") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VALUE "2"))))
 
@@ -65,6 +67,12 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
     (and (funcall t-fn *code-test-class* *code-test-class-tokens*)
 	 (funcall t-fn *code-test-variables-simple* *code-test-variables-simple-tokens*)
 	 (funcall t-fn *code-test-variables-advanced* *code-test-variables-advanced-tokens*))))
+
+(defun run-ast-test-suite-csharp ()
+  (let* ((parse-code (lambda (code) (parse-csharp(tokenize-csharp-code code))))
+	 (test-ast-tree (lambda (source test-tree) (test-ast-tree (funcall parse-code source)
+								  test-tree))))
+    (and (funcall test-ast-tree *code-test-class* *code-test-class-ast-tree*))))
 
 "
 
