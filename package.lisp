@@ -29,7 +29,7 @@
 	   :get-visibility-node-from-node-stack :get-type-node-from-node-stack
 	   :create-ast-walk-node :access-walk-node :next-walk-node
 	   :walk-collect-all-ast-nodes :walk-ast-tree-dfs
-	   :match-shallow-ast-node :test-ast-tree))
+	   :match-shallow-ast-node :test-ast-tree :ast-node-mismatch-error))
 
 (defpackage :csharp-parser
   (:use :common-lisp :code-generator-utils-space :tokenizer	:ast-node-space)

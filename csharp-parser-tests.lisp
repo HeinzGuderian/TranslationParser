@@ -77,10 +77,14 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 (defun run-ast-test-suite-csharp ()
   (let* ((parse-code (lambda (code) (parse-csharp(tokenize-csharp-code code))))
 	 (test-ast-tree (lambda (source test-tree) (test-ast-tree (funcall parse-code source)
-								  test-tree))))
-    (and (funcall test-ast-tree *code-test-class* *code-test-class-ast-tree*)
-	 (funcall test-ast-tree *code-test-variables-simple* *code-test-variables-simple-ast-tree*)
-	 (funcall test-ast-tree *code-test-variables-advanced* *code-test-variables-advanced-ast-tree* ))))
+								  test-tree)))
+	 (t-test (lambda (test-string control-tokens)
+		   (handler-case (funcall test-ast-tree test-string control-tokens)
+		     (ast-node-mismatch-error (condition)
+		       (format t "~S" (ast-node-space::text condition)) nil)))))
+    (and (funcall t-test *code-test-class* *code-test-class-ast-tree*)
+	 (funcall t-test *code-test-variables-simple* *code-test-variables-simple-ast-tree*)
+	 (funcall t-test *code-test-variables-advanced* *code-test-variables-advanced-ast-tree* ))))
 
 "
 
