@@ -65,10 +65,14 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
   (tokenizer::match-token-list (tokenize-csharp-code test-string) control-tokens))
 
 (defun run-tokenizer-test-suite-csharp ()
-  (let ((t-fn #'test-tokenizer-simple)) ;; test-function
-    (and (funcall t-fn *code-test-class* *code-test-class-tokens*)
-	 (funcall t-fn *code-test-variables-simple* *code-test-variables-simple-tokens*)
-	 (funcall t-fn *code-test-variables-advanced* *code-test-variables-advanced-tokens*))))
+  (let* ((t-fn #'test-tokenizer-simple)
+	 (t-test (lambda (test-string control-tokens)
+		   (handler-case (funcall t-fn test-string control-tokens)
+		     (token-mismatch-error (condition)
+		       (format t "~S" (tokenizer::text condition)) nil))))) ;; test-function
+    (and (funcall t-test *code-test-class* *code-test-class-tokens*)
+	 (funcall t-test *code-test-variables-simple* *code-test-variables-simple-tokens*)
+	 (funcall t-test *code-test-variables-advanced* *code-test-variables-advanced-tokens*))))
 
 (defun run-ast-test-suite-csharp ()
   (let* ((parse-code (lambda (code) (parse-csharp(tokenize-csharp-code code))))

@@ -16,7 +16,8 @@
 	   :grab-tokens-until
 	   :grab-tokens-until-fn
 	   :grab-tokens-until-filtered
-	   :match-token-list))
+	   :match-token-list
+	   :token-mismatch-error))
 
 (defpackage :ast-node-space
   (:use :common-lisp :code-generator-utils-space :tokenizer)
