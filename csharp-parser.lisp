@@ -129,7 +129,16 @@ Field = Visibility String as Type : FieldBody
 
 (defun parse-token-to-ast-node (tokenizer)
   (cond ((visibility? (current-token tokenizer)) (make-visibility-node tokenizer))
-	(t (make-ast-node "type" (current-token tokenizer)))))
+	(t (make-type-node tokenizer))))
+
+(defun make-type-node (tokenizer)
+  (with-token-and-peek
+    (if (match peek "[")
+	(let ((type-node (make-ast-node "type" (concatenate 'string token "[]"))))
+	       (advanze-token tokenizer)
+	       (advanze-token tokenizer)
+	       type-node)
+	(make-ast-node "type" token))))
 
 (defun visibility? (string)
   (cond ((match string "private") t)
@@ -145,8 +154,8 @@ Field = Visibility String as Type : FieldBody
 		       (list vis-list (current-token tokenizer))
 		       (current-token tokenizer)))))
 
-(defun make-type-node (tokenizer)
-  (make-ast-node "type" (current-token tokenizer)))
+;;(defun make-type-node (tokenizer)
+;;  (make-ast-node "type" (current-token tokenizer)))
 
 (defun class-variable? (tokenizer node-stack)
   (with-token-and-peek

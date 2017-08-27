@@ -19,7 +19,7 @@
   (cond ((and 1exist 2exist) (error 'ast-node-mismatch-error :text
 				    (concatenate 'string "Wrong symbol: '" (string (symbol-from-ast-node 1node))
 						 "' Control symbol: '" (string (symbol-from-ast-node 2node))
-						 "  " error-message)))
+						 "' " error-message)))
 	(1exist (error 'ast-node-mismatch-error :text
 				    (concatenate 'string "First symbol: '" (string (symbol-from-ast-node 1node))
 						 "' Second symbol do not exist "
