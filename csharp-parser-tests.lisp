@@ -45,11 +45,11 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI
 }"
   )
 
-(defparameter *code-test-variables-advanced-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "public" "GameObject" "_playerGameObject" ";" "TeamScript.PlayerNumberEnum" "_winningPlayer" ";" "private" "int" "[" "]" "d" ";" "private" "int" "a" "=" "2" ";" "}"))
+(defparameter *code-test-variables-custom-type-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "public" "GameObject" "_playerGameObject" ";" "TeamScript.PlayerNumberEnum" "_winningPlayer" ";" "private" "int" "a" "=" "2" ";" "}"))
 
-(defparameter *code-test-variables-advanced-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "public") (VARIABLE-NAME "_playerGameObject") (TYPE "GameObject") (VALUE)) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "_winningPlayer") (TYPE "TeamScript.PlayerNumberEnum") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "d") (TYPE "int[]") (VALUE))(CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE "2"))) )
+(defparameter *code-test-variables-custom-type-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "public") (VARIABLE-NAME "_playerGameObject") (TYPE "GameObject") (VALUE)) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "_winningPlayer") (TYPE "TeamScript.PlayerNumberEnum") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE "2"))) )
 
-(defparameter *code-test-variables-advanced* 
+(defparameter *code-test-variables-custom-type* 
 " 
 using UnityEngine;
 using UnityEngine;
@@ -57,6 +57,20 @@ using UnityEngine;
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
       public GameObject _playerGameObject;
       TeamScript.PlayerNumberEnum _winningPlayer;
+      private int a = 2;
+}
+")
+
+(defparameter *code-test-variables-arrays-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "[" "]" "d" ";" "private" "int" "a" "=" "2" ";" "}"))
+
+(defparameter *code-test-variables-arrays-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "d") (TYPE "int[]") (VALUE))(CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE "2"))) )
+
+(defparameter *code-test-variables-arrays* 
+" 
+using UnityEngine;
+using UnityEngine;
+
+partial public class FactoryEconomy : BuildingEconomy, IGUI {
       private int[] d;
       private int a = 2;
 }
@@ -73,7 +87,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 		       (format t "~S" (tokenizer::text condition)) nil))))) ;; test-function
     (and (funcall t-test *code-test-class* *code-test-class-tokens*)
 	 (funcall t-test *code-test-variables-simple* *code-test-variables-simple-tokens*)
-	 (funcall t-test *code-test-variables-advanced* *code-test-variables-advanced-tokens*))))
+	 (funcall t-test *code-test-variables-custom-type* *code-test-variables-custom-type-tokens*)
+	 (funcall t-test *code-test-variables-arrays* *code-test-variables-arrays-tokens*))))
 
 (defun run-ast-test-suite-csharp ()
   (let* ((parse-code (lambda (code) (parse-csharp(tokenize-csharp-code code))))
@@ -85,7 +100,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 		       (format t "~S" (ast-node-space::text condition)) nil)))))
     (and (funcall t-test *code-test-class* *code-test-class-ast-tree*)
 	 (funcall t-test *code-test-variables-simple* *code-test-variables-simple-ast-tree*)
-	 (funcall t-test *code-test-variables-advanced* *code-test-variables-advanced-ast-tree* ))))
+	 (funcall t-test *code-test-variables-custom-type* *code-test-variables-custom-type-ast-tree* )
+	 (funcall t-test *code-test-variables-arrays* *code-test-variables-arrays-ast-tree* ))))
 
 "
 
