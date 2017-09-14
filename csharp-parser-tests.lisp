@@ -76,6 +76,19 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 }
 ")
 
+(defparameter *code-test-class-function*
+" 
+using UnityEngine;
+using UnityEngine;
+
+partial public class FactoryEconomy : BuildingEconomy, IGUI {
+      private int a = 2;
+      public int add(int b, int c){
+          return b + a + c;
+      }
+}
+")
+
 (defun test-tokenizer-simple (test-string control-tokens)
   (tokenizer::match-token-list (tokenize-csharp-code test-string) control-tokens))
 

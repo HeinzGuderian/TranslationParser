@@ -2,7 +2,8 @@
   (:use :common-lisp)
   (:export :export-all-symbols
 	   :simple-list-identical?
-	   :dotted-pair?))
+	   :dotted-pair?
+	   :make-pairs))
 
 (defpackage :tokenizer
   (:use :common-lisp :code-generator-utils-space)

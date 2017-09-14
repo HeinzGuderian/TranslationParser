@@ -24,3 +24,7 @@
     (and (consp test-list)
 	 (not (null sec))
 	 (null (consp (cdr test-list))))))
+
+(defun make-pairs (in-list)
+  (loop with toggle = t for (a b) on in-list while b
+     when toggle collect (list a b) do (setf toggle (not toggle))))
