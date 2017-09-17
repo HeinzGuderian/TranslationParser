@@ -109,7 +109,14 @@ Field = Visibility String as Type : FieldBody
   (parse-param-list tokenizer "class-parameters"))
 
 (defun parse-function-param-list (tokenizer)
-  (parse-param-list tokenizer "function-parameter" #'code-generator-utils-space:make-pairs))
+  (parse-param-list tokenizer
+		    "function-parameters"
+		    #'(lambda (para-list)
+			(mapcar #'(lambda (pairs)
+				    (make-ast-node "function-parameter"
+					  (list (make-ast-node "type" (car pairs))
+					  (make-ast-node "variable-name" (cadr pairs)))))
+				(code-generator-utils-space:make-pairs para-list)))))
 
 (defun parse-param-list (tokenizer ast-node-name &optional (param-transform-fn nil))
   (let ((param-list (grab-tokens-until tokenizer ")")))
