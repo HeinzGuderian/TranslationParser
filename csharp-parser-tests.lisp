@@ -76,6 +76,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 }
 ")
 
+(defparameter *code-test-class-function-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "2" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "return" "b" "+" "a" "+" "c" ";" "}" "}"))
+
 (defparameter *code-test-class-function*
 " 
 using UnityEngine;

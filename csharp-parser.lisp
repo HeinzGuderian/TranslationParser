@@ -81,7 +81,7 @@ Field = Visibility String as Type : FieldBody
 (defun parse-class (tokenizer ast-tree)
   (parse-class-declaration tokenizer ast-tree)
   (advanze-token tokenizer)
-  (parse-class-body tokenizer ast-tree ()))
+  (parse-class-body tokenizer () ast-tree))
 
 (defun parse-class-declaration (tokenizer ast-tree)
   (let* ((class-declaration-node (make-ast-node "class-declaration" ()))
@@ -117,15 +117,16 @@ Field = Visibility String as Type : FieldBody
         (make-ast-node ast-node-name (strip-commas-from-string-list param-list))
         (make-ast-node ast-node-name (funcall param-transform-fn (strip-commas-from-string-list param-list))))))
 
-(defun parse-class-body (tokenizer ast-tree node-stack)
+(defun parse-class-body (tokenizer node-stack ast-tree)
   (loop do 
        (progn (print (current-token tokenizer))
 	      (print (peek-token tokenizer))
 	      (cond ((class-fn? tokenizer node-stack)(make-class-function tokenizer node-stack)(push-node "function" ast-tree))
-		    ((class-variable? tokenizer node-stack) 
+		    ((variable? tokenizer node-stack) 
 		     (push-node (make-class-variable tokenizer node-stack) ast-tree)
 		     (setq node-stack nil)
 		     (advanze-token tokenizer))
+
 		    ((eq (peek-token tokenizer) nil) (print "end finito"))
 		    (t (progn
 			 (if (consp node-stack)
@@ -142,7 +143,9 @@ Field = Visibility String as Type : FieldBody
 	(advanze-token tokenizer)
 	(advanze-token tokenizer)
 	(let ((param-pairs (parse-function-param-list tokenizer)))
-	  (print param-pairs)))))
+	  (print param-pairs)
+	  (print (current-token tokenizer))
+	  (advanze-token tokenizer)))))
 
 (defun class-fn? (tokenizer node-stack)
   (with-token-and-peek
@@ -180,7 +183,7 @@ Field = Visibility String as Type : FieldBody
 ;;(defun make-type-node (tokenizer)
 ;;  (make-ast-node "type" (current-token tokenizer)))
 
-(defun class-variable? (tokenizer node-stack)
+(defun variable? (tokenizer node-stack)
   (with-token-and-peek
     (or (match peek "=") 
 	(match peek ";"))))
@@ -196,6 +199,12 @@ Field = Visibility String as Type : FieldBody
       (make-ast-node "type" nil)))
 
 (defun make-class-variable (tokenizer node-stack)
+  (make-variable tokenizer node-stack "class-variable"))
+
+(defun make-function-variable (tokenizer node-stack)
+  (make-variable tokenizer node-stack "function-variable"))
+
+(defun make-variable (tokenizer node-stack enclosing-node-name)
   (if (not (or (match (peek-token tokenizer) ";")
 	       (match (peek-token tokenizer) "=")))
       (print "error parsing variable"))
@@ -207,11 +216,28 @@ Field = Visibility String as Type : FieldBody
 		      (advanze-token tokenizer)
 		      (advanze-token tokenizer))
 		    nil)))
-    (make-ast-node "class-variable" 
+    (make-ast-node enclosing-node-name
 		   (list visibility-node
 			 (make-ast-node "variable-name" name)
 			 type-node
 			 (make-ast-node "value" value)))))
+
+(defun parse-function-stmts (tokenizer node-stack ast-tree)
+  (loop do 
+       (progn (print (current-token tokenizer))
+	      (print (peek-token tokenizer))
+	      (cond  ((variable? tokenizer node-stack) 
+		      (push-node (make-function-variable tokenizer node-stack)
+				 ast-tree)
+		      (setq node-stack nil)
+		      (advanze-token tokenizer))
+		     ((eq (peek-token tokenizer) nil) (print "end finito"))
+		     (t (progn
+			  (if (consp node-stack)
+			      (push-node (parse-token-to-ast-node tokenizer) node-stack)
+			      (setf node-stack (list (parse-token-to-ast-node tokenizer)))))))
+	      (advanze-token tokenizer))
+     while (not(eq (peek-token tokenizer) "}"))))
 
 (defun expression (tokenizer node-stack)
   (with-token-and-peek
