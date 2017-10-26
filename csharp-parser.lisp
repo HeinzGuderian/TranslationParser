@@ -140,8 +140,7 @@ Field = Visibility String as Type : FieldBody
     ((variable? tokenizer node-stack) 
      (push-node (make-class-variable tokenizer node-stack) ast-tree)
      (setq node-stack nil)
-     (advanze-token tokenizer))
-    ((eq (peek-token tokenizer) nil) (print "end finito"))))
+     (advanze-token tokenizer))))
 
 (defun make-class-function (tokenizer node-stack)
   (with-token-and-peek
@@ -236,8 +235,7 @@ Field = Visibility String as Type : FieldBody
      (push-node (make-function-variable tokenizer node-stack)
 		ast-tree)
      (setq node-stack nil)
-     (advanze-token tokenizer))
-    ((eq (peek-token tokenizer) nil) (print "end finito"))))
+     (advanze-token tokenizer))))
 
 (defun expression (tokenizer node-stack)
   (with-token-and-peek
