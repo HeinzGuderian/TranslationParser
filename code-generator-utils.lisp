@@ -28,3 +28,7 @@
 (defun make-pairs (in-list)
   (loop with toggle = t for (a b) on in-list while b
      when toggle collect (list a b) do (setf toggle (not toggle))))
+
+(defun strip-string-from-string-list (param-list string-to-strip)
+  (delete string-to-strip param-list :test #'string=))
+

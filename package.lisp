@@ -3,7 +3,8 @@
   (:export :export-all-symbols
 	   :simple-list-identical?
 	   :dotted-pair?
-	   :make-pairs))
+	   :make-pairs
+	   :strip-string-from-string-list))
 
 (defpackage :tokenizer
   (:use :common-lisp :code-generator-utils-space)

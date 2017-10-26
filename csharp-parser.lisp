@@ -42,16 +42,6 @@ private static final
 Field = Visibility String as Type : FieldBody
 
 "
-
-(defun match-end (tokenizer) 
-  (match-cur tokenizer ";"))
-    
-(defun block-start (tokenizer) 
-  (match-cur tokenizer "{"))
-
-(defun block-end (tokenizer) 
-  (match-cur tokenizer "}"))
-
 (defun parse-csharp (tokenizer)
   (let ((ast-tree (list(make-ast-node "file" "name"))))
     (parse-file tokenizer ast-tree)
@@ -101,9 +91,6 @@ Field = Visibility String as Type : FieldBody
 								     ","))))
 	    (push-node class-inheritance-node class-declaration-node)))
 	ast-tree)))
-
-(defun strip-commas-from-string-list (param-list)
-  (delete "," param-list :test #'string=))
 
 (defun parse-class-param-list (tokenizer)
   (parse-param-list tokenizer "class-parameters"))
