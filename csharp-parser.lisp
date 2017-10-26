@@ -124,23 +124,24 @@ Field = Visibility String as Type : FieldBody
         (make-ast-node ast-node-name (strip-commas-from-string-list param-list))
         (make-ast-node ast-node-name (funcall param-transform-fn (strip-commas-from-string-list param-list))))))
 
-(defun parse-class-body (tokenizer node-stack ast-tree)
-  (loop do 
-       (progn (print (current-token tokenizer))
-	      (print (peek-token tokenizer))
-	      (cond ((class-fn? tokenizer node-stack)(make-class-function tokenizer node-stack)(push-node "function" ast-tree))
-		    ((variable? tokenizer node-stack) 
-		     (push-node (make-class-variable tokenizer node-stack) ast-tree)
-		     (setq node-stack nil)
-		     (advanze-token tokenizer))
+(defmacro with-parse-stmts ((tokenizer node-stack) &body body)
+    `(loop do
+	  (progn (cond ,@body
+		       (t (progn
+			    (if (consp ,node-stack)
+				(push-node (parse-token-to-ast-node ,tokenizer) ,node-stack)
+				(setf ,node-stack (list (parse-token-to-ast-node ,tokenizer)))))))
+		 (advanze-token ,tokenizer))
+	  while (not (eq (peek-token ,tokenizer) nil))))
 
-		    ((eq (peek-token tokenizer) nil) (print "end finito"))
-		    (t (progn
-			 (if (consp node-stack)
-			     (push-node (parse-token-to-ast-node tokenizer) node-stack)
-			     (setf node-stack (list (parse-token-to-ast-node tokenizer)))))))
-	      (advanze-token tokenizer))
-     while (not(eq (peek-token tokenizer) nil))))
+(defun parse-class-body (tokenizer node-stack ast-tree)
+  (with-parse-stmts (tokenizer node-stack)
+    ((class-fn? tokenizer node-stack)(make-class-function tokenizer node-stack)(push-node "function" ast-tree))
+    ((variable? tokenizer node-stack) 
+     (push-node (make-class-variable tokenizer node-stack) ast-tree)
+     (setq node-stack nil)
+     (advanze-token tokenizer))
+    ((eq (peek-token tokenizer) nil) (print "end finito"))))
 
 (defun make-class-function (tokenizer node-stack)
   (with-token-and-peek
@@ -229,22 +230,14 @@ Field = Visibility String as Type : FieldBody
 			 type-node
 			 (make-ast-node "value" value)))))
 
-(defun parse-function-stmts (tokenizer node-stack ast-tree)
-  (loop do 
-       (progn (print (current-token tokenizer))
-	      (print (peek-token tokenizer))
-	      (cond  ((variable? tokenizer node-stack) 
-		      (push-node (make-function-variable tokenizer node-stack)
-				 ast-tree)
-		      (setq node-stack nil)
-		      (advanze-token tokenizer))
-		     ((eq (peek-token tokenizer) nil) (print "end finito"))
-		     (t (progn
-			  (if (consp node-stack)
-			      (push-node (parse-token-to-ast-node tokenizer) node-stack)
-			      (setf node-stack (list (parse-token-to-ast-node tokenizer)))))))
-	      (advanze-token tokenizer))
-     while (not(eq (peek-token tokenizer) "}"))))
+(defun parse-function-body (tokenizer node-stack ast-tree)
+  (with-parse-stmts (tokenizer node-stack)
+    ((variable? tokenizer node-stack) 
+     (push-node (make-function-variable tokenizer node-stack)
+		ast-tree)
+     (setq node-stack nil)
+     (advanze-token tokenizer))
+    ((eq (peek-token tokenizer) nil) (print "end finito"))))
 
 (defun expression (tokenizer node-stack)
   (with-token-and-peek
