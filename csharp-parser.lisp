@@ -135,12 +135,15 @@ Field = Visibility String as Type : FieldBody
 (defun make-class-function (tokenizer node-stack)
   (with-token-and-peek
       (let ((visibility-node (make-or-get-visibility-node node-stack))
-	    (type-node (make-or-get-visibility-node node-stack))
+	    (type-node (make-or-get-type-node node-stack))
 	    (fn-name (current-token tokenizer)))
 	(advanze-token tokenizer)
 	(advanze-token tokenizer)
 	(let* ((param-pairs (parse-function-param-list tokenizer))
-	      (function-ast (list  param-pairs)))
+	       (function-ast (list visibility-node
+				   type-node
+				   (make-ast-node "function-name" fn-name)
+				   param-pairs)))
 	  (advanze-token tokenizer)
 	  (advanze-token tokenizer)
 	  (setq node-stack nil)
