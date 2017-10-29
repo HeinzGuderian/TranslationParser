@@ -8,7 +8,9 @@
 	  (cons (make-ast-symbol symbol) (list data)))))
 
 (defun push-node (node tree)
-  (push node (cdr (last tree))))
+  (if (null tree)
+      node
+      (push node (cdr (last tree)))))
 
 (defun symbol-from-ast-node (node)
   (car node))

@@ -123,7 +123,10 @@ Field = Visibility String as Type : FieldBody
 
 (defun parse-class-body (tokenizer node-stack ast-tree)
   (with-parse-stmts (tokenizer node-stack)
-    ((class-fn? tokenizer node-stack)(make-class-function tokenizer node-stack)(push-node "function" ast-tree))
+    ((class-fn? tokenizer node-stack)
+     (push-node (make-class-function tokenizer node-stack) ast-tree)
+     (setq node-stack nil)
+     (advanze-token tokenizer))
     ((variable? tokenizer node-stack) 
      (push-node (make-class-variable tokenizer node-stack) ast-tree)
      (setq node-stack nil)
@@ -136,10 +139,13 @@ Field = Visibility String as Type : FieldBody
 	    (fn-name (current-token tokenizer)))
 	(advanze-token tokenizer)
 	(advanze-token tokenizer)
-	(let ((param-pairs (parse-function-param-list tokenizer)))
-	  (print param-pairs)
-	  (print (current-token tokenizer))
-	  (advanze-token tokenizer)))))
+	(let* ((param-pairs (parse-function-param-list tokenizer))
+	      (function-ast (list  param-pairs)))
+	  (advanze-token tokenizer)
+	  (advanze-token tokenizer)
+	  (setq node-stack nil)
+	  (parse-function-body tokenizer node-stack function-ast)
+	  (make-ast-node "function-node" function-ast)))))
 
 (defun class-fn? (tokenizer node-stack)
   (with-token-and-peek
@@ -153,7 +159,7 @@ Field = Visibility String as Type : FieldBody
 
 (defun make-type-node (tokenizer)
   (with-token-and-peek
-    (if (match peek "[")
+     (if (match peek "[")
 	(let ((type-node (make-ast-node "type" (concatenate 'string token "[]"))))
 	       (advanze-token tokenizer)
 	       (advanze-token tokenizer)
@@ -218,18 +224,30 @@ Field = Visibility String as Type : FieldBody
 
 (defun parse-function-body (tokenizer node-stack ast-tree)
   (with-parse-stmts (tokenizer node-stack)
-    ((variable? tokenizer node-stack) 
-     (push-node (make-function-variable tokenizer node-stack)
-		ast-tree)
+    ((return-stmt? tokenizer node-stack)
+     (push-node (make-expression-node tokenizer node-stack) ast-tree))
+    ((variable? tokenizer node-stack)
+     (push-node (make-function-variable tokenizer node-stack) ast-tree)
      (setq node-stack nil)
      (advanze-token tokenizer))))
+
+(defun return-stmt? (tokenizer node-stack)
+  (with-token 
+    (if (match token "return")
+	t
+	nil)))
+
+(defun make-expression-node (tokenizer node-stack)
+  (advanze-token tokenizer)
+  (let ((return-node (make-ast-node "function-return" (list (expression tokenizer node-stack)))))
+    return-node))
 
 (defun expression (tokenizer node-stack)
   (with-token-and-peek
       (cond ((is-number? token) (make-value-node "number" token))
 	    ((is-bool? token) (make-value-node "bool" token))
 	    ((is-identifier? token peek) (make-identifier-node tokenizer node-stack))
-	    (t (make-ast-node (make-ast-symbol "identifier") "bla")))))
+	    (t (make-identifier-node tokenizer node-stack) "bla"))))
 	     
 
 (defun is-identifier? (token peek)
@@ -239,7 +257,7 @@ Field = Visibility String as Type : FieldBody
       t))
 
 (defun make-identifier-node (tokenizer node-stack)
-  (with-token-and-peek tokenizer (make-ast-node "identifier" token)))
+  (with-token tokenizer (make-ast-node "identifier" token)))
 
 (defun is-bool? (token)
   (if (or (match token "true")
@@ -264,6 +282,7 @@ Field = Visibility String as Type : FieldBody
 	((string= token "float") t)
 	((string= token "string") t)
 	((string= token "char") t)
+	((string= token "var") t)
 	(t nil)))
 
 (defun make-value-node(type value)
