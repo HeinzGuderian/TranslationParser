@@ -47,6 +47,12 @@
     `(let ((,token (current-token ,tokenizer)))
        ,@body)))
   
+(defmacro with-peek (&body body) 
+  (let ((peek (intern (symbol-name 'peek)))
+	(tokenizer (intern (symbol-name 'tokenizer))))
+    `(let ((,peek (peek-token ,tokenizer)))
+       ,@body)))
+  
 (defun print-tokens (tokenizer)
   (do ((token (current-token tokenizer) (advanze-token tokenizer))
        (x ()))

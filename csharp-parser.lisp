@@ -45,7 +45,6 @@ Field = Visibility String as Type : FieldBody
 (defun parse-csharp (tokenizer)
   (let ((ast-tree (list(make-ast-node "file" "name"))))
     (parse-file tokenizer ast-tree)
-;;    ))
    ast-tree))
 
 (defun parse-file (tokenizer ast-tree)
@@ -105,22 +104,6 @@ Field = Visibility String as Type : FieldBody
 					  (make-ast-node "variable-name" (cadr pairs)))))
 				(code-generator-utils-space:make-pairs para-list)))))
 
-(defun parse-param-list (tokenizer ast-node-name &optional (param-transform-fn nil))
-  (let ((param-list (grab-tokens-until tokenizer ")")))
-    (if (null param-transform-fn)
-        (make-ast-node ast-node-name (strip-commas-from-string-list param-list))
-        (make-ast-node ast-node-name (funcall param-transform-fn (strip-commas-from-string-list param-list))))))
-
-(defmacro with-parse-stmts ((tokenizer node-stack) &body body)
-    `(loop do
-	  (progn (cond ,@body
-		       (t (progn
-			    (if (consp ,node-stack)
-				(push-node (parse-token-to-ast-node ,tokenizer) ,node-stack)
-				(setf ,node-stack (list (parse-token-to-ast-node ,tokenizer)))))))
-		 (advanze-token ,tokenizer))
-	  while (not (eq (peek-token ,tokenizer) nil))))
-
 (defun parse-class-body (tokenizer node-stack ast-tree)
   (with-parse-stmts (tokenizer node-stack)
     ((class-fn? tokenizer node-stack)
@@ -133,10 +116,8 @@ Field = Visibility String as Type : FieldBody
      (advanze-token tokenizer))))
 
 (defun make-class-function (tokenizer node-stack)
-  (with-token-and-peek
-      (let ((visibility-node (make-or-get-visibility-node node-stack))
-	    (type-node (make-or-get-type-node node-stack))
-	    (fn-name (current-token tokenizer)))
+    (destructuring-bind (visibility-node type-node) (read-vis-type node-stack) 
+      (let ((fn-name (current-token tokenizer)))
 	(advanze-token tokenizer)
 	(advanze-token tokenizer)
 	(let* ((param-pairs (parse-function-param-list tokenizer))
@@ -183,23 +164,10 @@ Field = Visibility String as Type : FieldBody
 		       (list vis-list (current-token tokenizer))
 		       (current-token tokenizer)))))
 
-;;(defun make-type-node (tokenizer)
-;;  (make-ast-node "type" (current-token tokenizer)))
-
 (defun variable? (tokenizer node-stack)
   (with-token-and-peek
     (or (match peek "=") 
 	(match peek ";"))))
-
-(defun make-or-get-visibility-node(node-stack)
-  (if (node-stack-has-visibility-node? node-stack)
-      (get-visibility-node-from-node-stack node-stack)
-      (make-ast-node "visibility" nil)))
-
-(defun make-or-get-type-node(node-stack)
-  (if (node-stack-has-type-node? node-stack)
-      (get-type-node-from-node-stack node-stack)
-      (make-ast-node "type" nil)))
 
 (defun make-class-variable (tokenizer node-stack)
   (make-variable tokenizer node-stack "class-variable"))
@@ -211,19 +179,18 @@ Field = Visibility String as Type : FieldBody
   (if (not (or (match (peek-token tokenizer) ";")
 	       (match (peek-token tokenizer) "=")))
       (print "error parsing variable"))
-  (let* ((visibility-node (make-or-get-visibility-node node-stack))
-	 (type-node (make-or-get-type-node node-stack))
-	 (name (current-token tokenizer))
-	 (value (if (match (peek-token tokenizer) "=")
-		    (progn
-		      (advanze-token tokenizer)
-		      (advanze-token tokenizer))
-		    nil)))
-    (make-ast-node enclosing-node-name
-		   (list visibility-node
-			 (make-ast-node "variable-name" name)
-			 type-node
-			 (make-ast-node "value" value)))))
+  (destructuring-bind (visibility-node type-node) (read-vis-type node-stack) 
+    (let* ((name (current-token tokenizer))
+	   (value (if (match (peek-token tokenizer) "=")
+		      (progn
+			(advanze-token tokenizer)
+			(advanze-token tokenizer))
+		      nil)))
+      (make-ast-node enclosing-node-name
+		     (list visibility-node
+			   (make-ast-node "variable-name" name)
+			   type-node
+			   (make-ast-node "value" value))))))
 
 (defun parse-function-body (tokenizer node-stack ast-tree)
   (with-parse-stmts (tokenizer node-stack)
