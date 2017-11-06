@@ -9,5 +9,6 @@
 	       (:file "ast-node")
 	       (:file "ast-node-test")
 	       (:file "csharp-parser-helper")
+	       (:file "csharp-parser-function")
 	       (:file "csharp-parser")
 	       (:file "csharp-parser-tests")))

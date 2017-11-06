@@ -34,12 +34,13 @@
   (match (current-token tokenizer) symbol))
 
 (defun make-ast-symbol (symbol-string)
-  (let ((sym (intern (string-upcase symbol-string))))
-    (unintern sym)
-    (unintern sym 'ast-node-space)
-    (import sym 'ast-node-space)
-    (export sym 'ast-node-space)
-    sym))
+  (let ((sym (find-symbol symbol-string)))
+    (if (not (null sym))
+	sym
+	(let ((new-sym (intern (string-upcase symbol-string))))
+	  (import new-sym 'ast-node-space)
+	  (export new-sym 'ast-node-space)
+	  new-sym))))
 
 (defun node-stack-has-symbol-node? (node-stack symbol)
   (and (consp node-stack) 

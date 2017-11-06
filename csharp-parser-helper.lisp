@@ -19,6 +19,33 @@
         (make-ast-node ast-node-name (strip-commas-from-string-list param-list))
         (make-ast-node ast-node-name (funcall param-transform-fn (strip-commas-from-string-list param-list))))))
 
+(defun make-type-node (tokenizer)
+  (with-token-and-peek
+     (if (match peek "[")
+	(let ((type-node (make-ast-node "type" (concatenate 'string token "[]"))))
+	       (advanze-token tokenizer)
+	       (advanze-token tokenizer)
+	       type-node)
+	(make-ast-node "type" token))))
+
+(defun visibility? (string)
+  (cond ((match string "private") t)
+	((match string "public") t)
+	((match string "partial") t)
+	((match string "final") t)
+	(t nil)))
+
+(defun make-visibility-node (tokenizer)
+  (let ((vis-list (grab-tokens-until-fn tokenizer (lambda (x) (not (visibility? (peek-token x)))))))
+    (make-ast-node "visibility"
+		   (if (consp vis-list)
+		       (list vis-list (current-token tokenizer))
+		       (current-token tokenizer)))))
+
+(defun parse-token-to-ast-node (tokenizer)
+  (cond ((visibility? (current-token tokenizer)) (make-visibility-node tokenizer))
+	(t (make-type-node tokenizer))))
+
 (defmacro with-parse-stmts ((tokenizer node-stack) &body body)
     `(loop do
 	  (progn (cond ,@body
@@ -62,3 +89,25 @@
   (let* ((visibility-node (make-or-get-visibility-node node-stack))
 	 (type-node (make-or-get-type-node node-stack)))
     (list visibility-node type-node)))
+
+(defun make-variable (tokenizer node-stack enclosing-node-name)
+  (if (not (or (match (peek-token tokenizer) ";")
+	       (match (peek-token tokenizer) "=")))
+      (print "error parsing variable"))
+  (destructuring-bind (visibility-node type-node) (read-vis-type node-stack) 
+    (let* ((name (current-token tokenizer))
+	   (value (if (match (peek-token tokenizer) "=")
+		      (progn
+			(advanze-token tokenizer)
+			(advanze-token tokenizer))
+		      nil)))
+      (make-ast-node enclosing-node-name
+		     (list visibility-node
+			   (make-ast-node "variable-name" name)
+			   type-node
+			   (make-ast-node "value" value))))))
+
+(defun variable? (tokenizer node-stack)
+  (with-peek
+    (or (match peek "=") 
+	(match peek ";"))))
