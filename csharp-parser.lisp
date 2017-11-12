@@ -79,16 +79,17 @@ Field = Visibility String as Type : FieldBody
       (push-node class-name-node class-declaration-node)
       (push-node class-declaration-node ast-tree)
       (advanze-token tokenizer)
-      (when (not (block-start tokenizer))
-	(progn
-	  (advanze-token tokenizer)
-	  (let ((class-inheritance-node (make-ast-node 
-					 "class-inheritances"
-					 (grab-tokens-until-filtered tokenizer
-								     "{"
-								     ","))))
-	    (push-node class-inheritance-node class-declaration-node)))
-	ast-tree)))
+      (with-token
+	(when (not (match-block-start token))
+	  (progn
+	    (advanze-token tokenizer)
+	    (let ((class-inheritance-node (make-ast-node 
+					   "class-inheritances"
+					   (grab-tokens-until-filtered tokenizer
+								       "{"
+								       ","))))
+	      (push-node class-inheritance-node class-declaration-node)))
+	  ast-tree))))
 
 (defun parse-class-param-list (tokenizer)
   (parse-param-list tokenizer "class-parameters"))
@@ -102,7 +103,7 @@ Field = Visibility String as Type : FieldBody
      (push-node (make-class-function tokenizer node-stack) ast-tree)
      (setq node-stack nil)
      (advanze-token tokenizer))
-    ((variable? tokenizer node-stack) 
+    ((variable? tokenizer) 
      (push-node (make-class-variable tokenizer node-stack) ast-tree)
      (setq node-stack nil)
      (advanze-token tokenizer))))

@@ -1,14 +1,16 @@
 (ql:quickload "cl-utilities")
 (in-package :csharp-parser)
 
-(defun match-end (tokenizer) 
-  (match-cur tokenizer ";"))
-    
-(defun block-start (tokenizer) 
-  (match-cur tokenizer "{"))
+(defmacro define-match-fn (fn-name-supplied symbol-string)
+  (let* ((package (symbol-package fn-name-supplied))
+	 (fn-name (intern (format nil "MATCH-~a" fn-name-supplied)package))
+	 (fn-token (intern "token" package)))
+    `(defun ,fn-name (,fn-token) (match ,fn-token ,symbol-string))))
 
-(defun block-end (tokenizer) 
-  (match-cur tokenizer "}"))
+(define-match-fn end ";")
+(define-match-fn block-start "{")
+(define-match-fn block-end "}")
+(define-match-fn assign "=")
 
 (defun strip-commas-from-string-list (string-list)
   (code-generator-utils-space:strip-string-from-string-list string-list ","))
@@ -90,24 +92,3 @@
 	 (type-node (make-or-get-type-node node-stack)))
     (list visibility-node type-node)))
 
-(defun make-variable (tokenizer node-stack enclosing-node-name)
-  (if (not (or (match (peek-token tokenizer) ";")
-	       (match (peek-token tokenizer) "=")))
-      (print "error parsing variable"))
-  (destructuring-bind (visibility-node type-node) (read-vis-type node-stack) 
-    (let* ((name (current-token tokenizer))
-	   (value (if (match (peek-token tokenizer) "=")
-		      (progn
-			(advanze-token tokenizer)
-			(advanze-token tokenizer))
-		      nil)))
-      (make-ast-node enclosing-node-name
-		     (list visibility-node
-			   (make-ast-node "variable-name" name)
-			   type-node
-			   (make-ast-node "value" value))))))
-
-(defun variable? (tokenizer node-stack)
-  (with-peek
-    (or (match peek "=") 
-	(match peek ";"))))

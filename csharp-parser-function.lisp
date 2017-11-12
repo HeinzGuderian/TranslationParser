@@ -34,7 +34,7 @@
 	  (parse-function-body tokenizer node-stack function-ast)
 	  (make-ast-node "function-node" function-ast)))))
 
-(defun return-stmt? (tokenizer node-stack)
+(defun return-stmt? (tokenizer)
   (with-token 
     (if (match token "return")
 	t
@@ -50,9 +50,9 @@
 
 (defun parse-function-body (tokenizer node-stack ast-tree)
   (with-parse-stmts (tokenizer node-stack)
-    ((return-stmt? tokenizer node-stack)
+    ((return-stmt? tokenizer)
      (push-node (make-expression-node tokenizer node-stack) ast-tree))
-    ((variable? tokenizer node-stack)
+    ((variable? tokenizer)
      (push-node (make-function-variable tokenizer node-stack) ast-tree)
      (setq node-stack nil)
      (advanze-token tokenizer))))

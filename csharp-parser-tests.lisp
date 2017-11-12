@@ -94,6 +94,16 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 }
 ")
 
+(defparameter *code-test-expression-archimetic-simple-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2+3" ";" "}"))
+(defparameter *code-test-expression-archimetic-simple*
+" 
+using UnityEngine;
+
+public class FactoryEconomy{
+      private int a = 2+3;
+}
+")
+
 (defun test-tokenizer-simple (test-string control-tokens)
   (tokenizer::match-token-list (tokenize-csharp-code test-string) control-tokens))
 
