@@ -32,6 +32,7 @@
 	  (advanze-token tokenizer)
 	  (setq node-stack nil)
 	  (parse-function-body tokenizer node-stack function-ast)
+	  (setq node-stack nil)
 	  (make-ast-node "function-node" function-ast)))))
 
 (defun return-stmt? (tokenizer)

@@ -49,14 +49,15 @@
 	(t (make-type-node tokenizer))))
 
 (defmacro with-parse-stmts ((tokenizer node-stack) &body body)
-    `(loop do
-	  (progn (cond ,@body
-		       (t (progn
-			    (if (consp ,node-stack)
-				(push-node (parse-token-to-ast-node ,tokenizer) ,node-stack)
-				(setf ,node-stack (list (parse-token-to-ast-node ,tokenizer)))))))
-		 (advanze-token ,tokenizer))
-	  while (not (eq (peek-token ,tokenizer) nil))))
+  `(loop do
+	(progn (cond ,@body
+		     (t (progn
+			  (if (consp ,node-stack)
+			      (push-node (parse-token-to-ast-node ,tokenizer) ,node-stack)
+			      (setf ,node-stack (list (parse-token-to-ast-node ,tokenizer)))))))
+	       (advanze-token ,tokenizer))
+      while (and (not (eq (peek-token ,tokenizer) nil))
+		 (not (match-block-end (peek-token ,tokenizer))))))
 
 
 (defun make-visibility-symbol ()
