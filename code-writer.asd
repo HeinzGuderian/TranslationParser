@@ -1,6 +1,6 @@
 (asdf:defsystem "code-writer"
   :serial t
-  :depends-on (#:cl-utilities)
+  :depends-on (#:cl-utilities #:alexandria)
   :components ((:file "package")
                (:file "tokenizer")
 	       (:file "tokenizer-object")

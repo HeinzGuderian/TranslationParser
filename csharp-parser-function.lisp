@@ -41,18 +41,19 @@
 	t
 	nil)))
 
+(defun make-return-node (tokenizer node-stack)
+  (advanze-token tokenizer)
+  ;;(let (())) ;;Fixa binda node stack och ast tree
+  (let ((return-node (make-ast-node "function-return" (list (make-expression-leaf-node tokenizer)))))
+    return-node))
+
 (defun make-function-variable (tokenizer node-stack)
   (make-variable tokenizer node-stack "function-variable"))
-
-(defun make-expression-node (tokenizer node-stack)
-  (advanze-token tokenizer)
-  (let ((return-node (make-ast-node "function-return" (list (expression tokenizer node-stack)))))
-    return-node))
 
 (defun parse-function-body (tokenizer node-stack ast-tree)
   (with-parse-stmts (tokenizer node-stack)
     ((return-stmt? tokenizer)
-     (push-node (make-expression-node tokenizer node-stack) ast-tree))
+     (push-node (make-return-node tokenizer node-stack) ast-tree))
     ((variable? tokenizer)
      (push-node (make-function-variable tokenizer node-stack) ast-tree)
      (setq node-stack nil)
