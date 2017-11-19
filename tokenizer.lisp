@@ -13,10 +13,19 @@
 (defun get-next-token (token-struct) (cdr token-struct))
 (defun tokens-length (token-struct) (length token-struct))
 (defun find-token (string-to-find token-struct)
-  (dolist (token-part token-struct)
-    (let ((is-found (search (get-token-name token-part) string-to-find )))
-    (when is-found
-      (return (values is-found (+ is-found(get-token-length token-part))))))))
+  (let ((closest-token ()))
+    (dolist (token-part token-struct)
+      (let ((is-found (search (get-token-name token-part) string-to-find )))
+	;;(print token-part)
+	(when (and is-found (or (null closest-token) (car closest-token)))
+	  (setf closest-token (cons is-found (+ is-found(get-token-length token-part)))))))
+    (values (car closest-token) (cdr closest-token))))
+    ;;(cons is-found
+    ;;     (+ is-found (get-token-length token-part)))))))
+    ;;(return (values (car closest-token) (cdr closest-token)))))
+
+	  
+	 ;; (return (values is-found (+ is-found(get-token-length token-part)))))))))
 
 (defun tokenize-fn (string-to-tokenize get-tokens)
   (let ((rougly-splitted (split-if (lambda (x) (or (equal x #\Newline)(equal x #\Space) (equal x #\linefeed) (equal x #\return))) string-to-tokenize :remove-empty-subseqs t))
