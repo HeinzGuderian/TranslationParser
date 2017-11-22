@@ -16,9 +16,10 @@
   (let ((closest-token ()))
     (dolist (token-part token-struct)
       (let ((is-found (search (get-token-name token-part) string-to-find )))
-	;;(print token-part)
-	(when (and is-found (or (null closest-token) (car closest-token)))
-	  (setf closest-token (cons is-found (+ is-found(get-token-length token-part)))))))
+	(if (and is-found (null closest-token))
+	    (setf closest-token (cons is-found (+ is-found(get-token-length token-part))))
+	    (when (and is-found (< is-found (car closest-token)))
+	      (setf closest-token (cons is-found (+ is-found(get-token-length token-part))))))))
     (values (car closest-token) (cdr closest-token))))
     ;;(cons is-found
     ;;     (+ is-found (get-token-length token-part)))))))
