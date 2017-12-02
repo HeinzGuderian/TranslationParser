@@ -11,6 +11,8 @@
 (define-match-fn block-start "{")
 (define-match-fn block-end "}")
 (define-match-fn assign "=")
+(define-match-fn para-begin "(")
+(define-match-fn para-end ")")
 
 (defun strip-commas-from-string-list (string-list)
   (code-generator-utils-space:strip-string-from-string-list string-list ","))
@@ -47,6 +49,11 @@
 (defun parse-token-to-ast-node (tokenizer)
   (cond ((visibility? (current-token tokenizer)) (make-visibility-node tokenizer))
 	(t (make-type-node tokenizer))))
+
+(defmacro push-set (value target)
+  `(if (consp ,target)
+       (push-node ,value ,target)
+       (setf ,target (list ,value))))
 
 (defmacro with-parse-stmts ((tokenizer node-stack) &body body)
   `(loop do

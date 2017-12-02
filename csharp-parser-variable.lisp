@@ -15,10 +15,10 @@
 	   (value (if (match-assign peek)
 		      (progn
 			(advanze-token tokenizer)
-			(advanze-token tokenizer))
+			(parse-expression tokenizer))
 		      nil)))
       (make-ast-node enclosing-node-name
 		     (list visibility-node
 			   (make-ast-node "variable-name" name)
 			   type-node
-			   (make-ast-node "value" value))))))
+			   (make-ast-node "variable-value" value))))))
