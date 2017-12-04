@@ -10,9 +10,8 @@
       while (and (not (eq (peek-token ,tokenizer) nil))
 		 (not (match-end (peek-token ,tokenizer))))))
 
-(defun is-nested? (tokenizer)
-  (with-token
-    (match-para-begin token)))
+(defun is-nested? (token)
+    (match-para-begin token))
 
 (defun is-identifier? (peek)
   (if (or (match peek ".")
@@ -48,7 +47,12 @@
 	   (push-set (make-value-node "bool" token) expr-list))
 	  ((is-basic-math-operator? token)
 	   (push-set (make-value-node "math-operator" token) expr-list))
-	  ((is-nested? tokenizer) (push-set "nest" expr-list))
+	  ((is-nested? token)
+	   (push-set
+	    (make-ast-node "nested-expression"
+			   (make-expression-leaf-node tokenizer ()))
+	    expr-list))
+	  ((match-para-end token) (return expr-list))
 	  ((is-identifier? peek)
 	   (push-set (make-identifier-node token) expr-list))
 	  (t (make-identifier-node token) "bla")))

@@ -106,6 +106,19 @@ public class FactoryEconomy{
 }
 ")
 
+(defparameter *code-test-expression-archimetic-nested-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2" "+" "(" "3" "+" "1" ")" "-" "5" ";" "private" "int" "b" "=" "10" ";" "}"))
+(defparameter *code-test-expression-archimetic-nested-ast-tree* '((FILE "name") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "public") (CLASS-NAME "FactoryEconomy")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (NESTED-EXPRESSION (EXPRESSION-VALUE (TYPE "number") (VALUE "3")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (EXPRESSION-VALUE (TYPE "number") (VALUE "1"))) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "-")) (EXPRESSION-VALUE (TYPE "number") (VALUE "5")))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "10"))))))
+(defparameter *code-test-expression-archimetic-nested*
+" 
+using UnityEngine;
+
+public class FactoryEconomy{
+      private int a = 2+(3+1)-5;
+      private int b = 10;
+}
+")
+
+
 (defun test-tokenizer-simple (test-string control-tokens)
   (tokenizer::match-token-list (tokenize-csharp-code test-string) control-tokens))
 
@@ -120,7 +133,8 @@ public class FactoryEconomy{
 	 (funcall t-test *code-test-variables-custom-type* *code-test-variables-custom-type-tokens*)
 	 (funcall t-test *code-test-variables-arrays* *code-test-variables-arrays-tokens*)
 	 (funcall t-test *code-test-class-function* *code-test-class-function-tokens*)
-	 (funcall t-test *code-test-expression-archimetic-simple* *code-test-expression-archimetic-simple-tokens*))))
+	 (funcall t-test *code-test-expression-archimetic-simple* *code-test-expression-archimetic-simple-tokens*)
+	 (funcall t-test *code-test-expression-archimetic-nested* *code-test-expression-archimetic-nested-tokens*))))
 
 (defun run-ast-test-suite-csharp ()
   (let* ((parse-code (lambda (code) (parse-csharp(tokenize-csharp-code code))))
@@ -135,7 +149,8 @@ public class FactoryEconomy{
 	 (funcall t-test *code-test-variables-custom-type* *code-test-variables-custom-type-ast-tree* )
 	 (funcall t-test *code-test-variables-arrays* *code-test-variables-arrays-ast-tree* )
 	 (funcall t-test *code-test-class-function* *code-test-class-function-ast-tree*)
-	 (funcall t-test *code-test-expression-archimetic-simple* *code-test-expression-archimetic-simple-ast-tree*))))
+	 (funcall t-test *code-test-expression-archimetic-simple* *code-test-expression-archimetic-simple-ast-tree*)
+	 (funcall t-test *code-test-expression-archimetic-nested* *code-test-expression-archimetic-nested-ast-tree*))))
 
 "
 
