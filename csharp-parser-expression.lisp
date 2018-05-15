@@ -11,13 +11,17 @@
 		 (not (match-end (peek-token ,tokenizer))))))
 
 (defun is-nested? (token)
-    (match-para-begin token))
+  (match-para-begin token))
 
-(defun is-identifier? (peek)
-  (if (or (match peek ".")
-	  t)
-      t
-      t))
+(defun is-identifier? (token peek)
+  (and (not (is-basic-math-operator? token))
+       (not (is-number? token))
+       (not (is-bool? token))
+       (not (is-special-token? token))
+       (if (or (match peek ".")
+	       t)
+	   t
+	   t)))
 
 (defun make-identifier-node (token)
   (make-ast-node "identifier" token))
@@ -53,7 +57,7 @@
 			   (make-expression-leaf-node tokenizer ()))
 	    expr-list))
 	  ((match-para-end token) (return expr-list))
-	  ((is-identifier? peek)
+	  ((is-identifier? token peek)
 	   (push-set (make-identifier-node token) expr-list))
 	  (t (make-identifier-node token) "bla")))
   expr-list)

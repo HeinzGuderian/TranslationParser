@@ -14,6 +14,14 @@
 (define-match-fn para-begin "(")
 (define-match-fn para-end ")")
 
+(defun is-special-token? (token)
+  (or (match-end token)
+      (match-block-start token)
+      (match-block-end token)
+      (match-assign token)
+      (match-para-begin token)
+      (match-para-end token)))
+
 (defun strip-commas-from-string-list (string-list)
   (code-generator-utils-space:strip-string-from-string-list string-list ","))
 
