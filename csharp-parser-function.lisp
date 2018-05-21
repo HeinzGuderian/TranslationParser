@@ -41,7 +41,7 @@
 	t
 	nil)))
 
-(defun make-return-node (tokenizer node-stack)
+(defun make-return-node (tokenizer)
   (let ((return-node (make-ast-node "function-return" (parse-expression tokenizer))))
     return-node))
 
@@ -51,7 +51,10 @@
 (defun parse-function-body (tokenizer node-stack ast-tree)
   (with-parse-stmts (tokenizer node-stack)
     ((return-stmt? tokenizer)
-     (push-node (make-return-node tokenizer node-stack) ast-tree))
+     (push-node (make-return-node tokenizer) ast-tree))
     ((variable? tokenizer)
      (push-node (make-function-variable tokenizer node-stack) ast-tree)
+     (setq node-stack nil))
+    ((class-function-call? tokenizer)
+     (push-node (make-function-call tokenizer) ast-tree)
      (setq node-stack nil))))
