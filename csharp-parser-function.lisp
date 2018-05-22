@@ -54,6 +54,7 @@
      (push-node (make-return-node tokenizer) ast-tree))
     ((variable? tokenizer)
      (push-node (make-function-variable tokenizer node-stack) ast-tree)
+     (advanze-token tokenizer)
      (setq node-stack nil))
     ((class-function-call? tokenizer)
      (push-node (make-function-call tokenizer) ast-tree)

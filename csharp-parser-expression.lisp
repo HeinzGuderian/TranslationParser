@@ -41,7 +41,9 @@
 
 (defun make-expression-leaf-node (tokenizer expr-list)
   (with-parse-expression (tokenizer)
-    (cond ((is-number? token)
+    (cond ((class-function-call? tokenizer)
+	   (push-set (make-function-call tokenizer) expr-list))
+          ((is-number? token)
 	   (push-set (make-value-node "number" token) expr-list))
 	  ((is-bool? token)
 	   (push-set (make-value-node "bool" token) expr-list))
@@ -55,7 +57,7 @@
 	  ((match-para-end token) (return expr-list))
 	  ((is-identifier? token)
 	   (push-set (make-identifier-node token) expr-list))
-	  (t (make-identifier-node token) "bla")))
+	  (t (push-set (make-identifier-node "error parsing expression") expr-list))))
   expr-list)
 
 (defun expression (tokenizer expr-list)

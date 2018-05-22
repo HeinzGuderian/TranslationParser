@@ -13,5 +13,4 @@
     (let* ((params (parse-param-list tokenizer "function-call-params"))
 	  (function-params-ast (list fn-name
 				     params)))
-      (advanze-token tokenizer)
       (make-ast-node "function-call" function-params-ast))))
