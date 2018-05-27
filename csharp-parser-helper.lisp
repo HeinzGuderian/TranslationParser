@@ -13,6 +13,7 @@
 (define-match-fn assign "=")
 (define-match-fn para-begin "(")
 (define-match-fn para-end ")")
+(define-match-fn comma ",")
 
 (defun is-special-token? (token)
   (or (match-end token)

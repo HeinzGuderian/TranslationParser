@@ -55,6 +55,7 @@
 			   (make-expression-leaf-node tokenizer ()))
 	    expr-list))
 	  ((match-para-end token) (return expr-list))
+	  ((match-comma token) (return expr-list))
 	  ((is-identifier? token)
 	   (push-set (make-identifier-node token) expr-list))
 	  (t (push-set (make-identifier-node "error parsing expression") expr-list))))

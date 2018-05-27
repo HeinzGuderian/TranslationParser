@@ -131,7 +131,7 @@ public class FactoryEconomy{
 ")
 
 (defparameter *code-test-class-function-call-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "e" "(" "3" "," "4" "," "5" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))
-(defparameter *code-test-class-function-call-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "1")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-CALL (FUNCTION-CALL-NAME "e") (FUNCTION-CALL-PARAMS "3" "4" "5")) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "f") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "6"))))))		 
+(defparameter *code-test-class-function-call-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "1")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-CALL (FUNCTION-CALL-NAME "e") (FUNCTION-ARGUMENTS ((EXPRESSION-VALUE (TYPE "number") (VALUE "3"))) ((EXPRESSION-VALUE (TYPE "number") (VALUE "4"))) ((EXPRESSION-VALUE (TYPE "number") (VALUE "5"))))) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "f") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "6"))))))		 
 (defparameter *code-test-class-function-call*
 " 
 using UnityEngine;
@@ -149,7 +149,7 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 ")
 
 (defparameter *code-test-class-function-call-in-expression-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "var" "t" "=" "e" "(" "3" "," "4" "," "5" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))
-(defparameter *code-test-class-function-call-in-expression-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "1")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "t") (TYPE "var") (VARIABLE-VALUE (FUNCTION-CALL (FUNCTION-CALL-NAME "e") (FUNCTION-CALL-PARAMS "3" "4" "5")))) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "f") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "6"))))))
+(defparameter *code-test-class-function-call-in-expression-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "1")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "t") (TYPE "var") (VARIABLE-VALUE (FUNCTION-CALL (FUNCTION-CALL-NAME "e") (FUNCTION-ARGUMENTS ((EXPRESSION-VALUE (TYPE "number") (VALUE "3"))) ((EXPRESSION-VALUE (TYPE "number") (VALUE "4"))) ((EXPRESSION-VALUE (TYPE "number") (VALUE "5"))))))) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "f") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "6"))))))
 (defparameter *code-test-class-function-call-in-expression*
 " 
 using UnityEngine;
@@ -160,6 +160,24 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
       public int add(int b, int c){
           var d = 2;
           var t = e(3,4, 5);
+          return b;
+      }
+      private int f = 6;
+}
+")
+
+(defparameter *code-test-class-function-call-in-expression-params-expression-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "var" "t" "=" "e" "(" "3" "+" "5" "," "a" "," "c" "-" "d" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}"))
+(defparameter *code-test-class-function-call-in-expression-params-expression-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "1")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "t") (TYPE "var") (VARIABLE-VALUE (FUNCTION-CALL (FUNCTION-CALL-NAME "e") (FUNCTION-ARGUMENTS ((EXPRESSION-VALUE (TYPE "number") (VALUE "3")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (EXPRESSION-VALUE (TYPE "number") (VALUE "5"))) ((IDENTIFIER "a")) ((IDENTIFIER "c") (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "-")) (IDENTIFIER "d")))))) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "f") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "6"))))))
+(defparameter *code-test-class-function-call-in-expression-params-expression*
+" 
+using UnityEngine;
+using UnityEngine;
+
+partial public class FactoryEconomy : BuildingEconomy, IGUI {
+      private int a = 1;
+      public int add(int b, int c){
+          var d = 2;
+          var t = e(3+5,a, c-d);
           return b;
       }
       private int f = 6;
@@ -185,7 +203,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 	 (funcall t-test *code-test-expression-archimetic-nested* *code-test-expression-archimetic-nested-tokens*)
 	 (funcall t-test *code-test-expression-archimetic-nested-minus* *code-test-expression-archimetic-nested-minus-tokens*)
 	 (funcall t-test *code-test-class-function-call* *code-test-class-function-call-tokens*)
-	 (funcall t-test *code-test-class-function-call-in-expression* *code-test-class-function-call-in-expression-tokens*))))
+	 (funcall t-test *code-test-class-function-call-in-expression* *code-test-class-function-call-in-expression-tokens*)
+	 (funcall t-test *code-test-class-function-call-in-expression-params-expression* *code-test-class-function-call-in-expression-params-expression-tokens*))))
 
 (defun run-ast-test-suite-csharp ()
   (let* ((parse-code (lambda (code) (parse-csharp(tokenize-csharp-code code))))
@@ -204,7 +223,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 	 (funcall t-test *code-test-expression-archimetic-nested* *code-test-expression-archimetic-nested-ast-tree*)
 	 (funcall t-test *code-test-expression-archimetic-nested-minus* *code-test-expression-archimetic-nested-minus-ast-tree*)
 	 (funcall t-test *code-test-class-function-call* *code-test-class-function-call-ast-tree*)
-	 (funcall t-test *code-test-class-function-call-in-expression* *code-test-class-function-call-in-expression-ast-tree*))))
+	 (funcall t-test *code-test-class-function-call-in-expression* *code-test-class-function-call-in-expression-ast-tree*)
+	 (funcall t-test *code-test-class-function-call-in-expression-params-expression* *code-test-class-function-call-in-expression-params-expression-ast-tree*))))
 
 "
 
