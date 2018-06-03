@@ -8,6 +8,7 @@
 	       (:file "code-generator-utils")
 	       (:file "ast-node")
 	       (:file "ast-node-test")
+	       (:file "ast-node-class")
 	       (:file "csharp-parser-helper")
 	       (:file "csharp-parser-expression")
 	       (:file "csharp-parser-variable")
