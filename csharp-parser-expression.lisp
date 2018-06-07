@@ -40,9 +40,10 @@
     (make-ast-node "expression-value" (list type-node value-node))))
 
 (defun make-expression-leaf-node (tokenizer expr-list)
+  (let ((function-call-node (make-instance 'function-call-ast-node)))
   (with-parse-expression (tokenizer)
-    (cond ((class-function-call? tokenizer)
-	   (push-set (make-function-call tokenizer) expr-list))
+    (cond ((is-node-type? function-call-node tokenizer ())
+	   (push-set (make-node function-call-node tokenizer ()) expr-list))
           ((is-number? token)
 	   (push-set (make-value-node "number" token) expr-list))
 	  ((is-bool? token)
@@ -59,7 +60,7 @@
 	  ((is-identifier? token)
 	   (push-set (make-identifier-node token) expr-list))
 	  (t (push-set (make-identifier-node "error parsing expression") expr-list))))
-  expr-list)
+  expr-list))
 
 (defun expression (tokenizer expr-list)
   (make-expression-leaf-node tokenizer expr-list))
