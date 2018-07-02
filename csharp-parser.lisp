@@ -46,7 +46,7 @@ Field = Visibility String as Type : FieldBody
 
 "
 (defun parse-csharp (tokenizer)
-  (let ((ast-tree (list(make-ast-node "file" "name"))))
+  (let ((ast-tree (make-ast-node "file" "name")))
     (parse-file tokenizer ast-tree)
    ast-tree))
 

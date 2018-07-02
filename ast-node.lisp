@@ -1,23 +1,5 @@
 (in-package :ast-node-space)
 
-(defun make-ast-node (symbol data)
-  (if (null data)
-      (list (make-ast-symbol symbol))
-      (if (consp data)
-	  (cons (make-ast-symbol symbol) data)
-	  (cons (make-ast-symbol symbol) (list data)))))
-
-(defun push-node (node tree)
-  (if (null tree)
-      node
-      (push node (cdr (last tree)))))
-
-(defun symbol-from-ast-node (node)
-  (car node))
-
-(defun data-from-ast-node (node)
-  (cdr node))
-
 (defun same-node-symbol? (sym1 sym2)
   (eq sym1 sym2))
 
@@ -79,4 +61,4 @@
 							  (return-continue-fn (cdr tok-rec-tree) continue-fns))))))))
     (rec-test tokenized-tree nil)))
 
-  
+  ;; Convert walk-ast-tree-dfs to trec ( On Lisp page 75 )

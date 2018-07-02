@@ -1,10 +1,19 @@
 (in-package :ast-node-space)
 
-(defclass ast-node-base-class ()
+(defclass ast-node ()
   ((symbol
     :initarg :symbol
-    :reader symbol)
-   (data :accessor data)))
-(defgeneric is-node-type? (node tokenizer node-stack)
-  (:documentation "Analyses the state and determines if it is a node of this type."))
-(defgeneric make-node (node tokenzier node-stack))
+    :reader symbol-from-ast-node)
+   (data
+    :initarg :data
+    :initform (list)
+    :reader data-from-ast-node
+    :accessor data)))
+
+(defun make-ast-node (symbol data &optional (class 'ast-node))
+  (make-instance class :symbol symbol :data (if (consp data) data (list data))))
+
+(defun push-node (node tree)
+  (if (null tree)
+      node
+      (push node (data (last tree)))))
