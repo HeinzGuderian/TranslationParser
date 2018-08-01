@@ -47,8 +47,7 @@ Field = Visibility String as Type : FieldBody
 "
 (defun parse-csharp (tokenizer)
   (let ((ast-tree (make-ast-node "file" "name")))
-    (parse-file tokenizer ast-tree)
-   ast-tree))
+    (parse-file tokenizer ast-tree)))
 
 (defun parse-file (tokenizer ast-tree)
   (parse-usings tokenizer ast-tree)
@@ -71,9 +70,16 @@ Field = Visibility String as Type : FieldBody
 	nil)))
 
 (defun parse-class (tokenizer ast-tree)
-  (parse-class-declaration tokenizer ast-tree)
-  (advanze-token tokenizer)
-  (parse-class-body tokenizer () ast-tree))
+  (let* ((class-node (make-ast-node "class-node" ()))
+	 (class-declaration(parse-class-declaration tokenizer class-node)))
+    (advanze-token tokenizer)
+    (push-node class-declaration class-node)
+    (let ((class-body (make-ast-node "class-body" ())))
+      (parse-class-body tokenizer () class-body)
+      (push-node class-body class-node)
+      (push-node class-node ast-tree)
+      ast-tree)))
+      ;;class-node)))
 
 (defun parse-class-declaration (tokenizer ast-tree)
   (let* ((class-declaration-node (make-ast-node "class-declaration" ()))
@@ -81,7 +87,6 @@ Field = Visibility String as Type : FieldBody
 	 (class-name-node (make-ast-node "class-name" (advanze-token tokenizer))))
       (push-node class-modifiers-node class-declaration-node)
       (push-node class-name-node class-declaration-node)
-      (push-node class-declaration-node ast-tree)
       (advanze-token tokenizer)
       (with-token
 	(when (not (match-block-start token))
@@ -93,7 +98,7 @@ Field = Visibility String as Type : FieldBody
 								       "{"
 								       ","))))
 	      (push-node class-inheritance-node class-declaration-node)))
-	  ast-tree))))
+	  class-declaration-node))))
 
 (defun parse-class-param-list (tokenizer)
   (parse-param-list tokenizer "class-parameters"))
@@ -107,7 +112,7 @@ Field = Visibility String as Type : FieldBody
      (push-node (make-class-function tokenizer node-stack) ast-tree)
      (setq node-stack nil)
      (advanze-token tokenizer))
-    ((variable? tokenizer) 
+    ((variable? tokenizer)
      (push-node (make-class-variable tokenizer node-stack) ast-tree)
      (setq node-stack nil)
      (advanze-token tokenizer))))

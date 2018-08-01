@@ -8,12 +8,32 @@
     :initarg :data
     :initform (list)
     :reader data-from-ast-node
-    :accessor data)))
+    :accessor data)
+   (subnodes
+    :initarg :subnodes
+    :initform (list)
+    :accessor subnodes)))
 
 (defun make-ast-node (symbol data &optional (class 'ast-node))
-  (make-instance class :symbol symbol :data (if (consp data) data (list data))))
+  (make-instance class
+		 :symbol symbol
+		 :data (if (consp data) data (list data))))
 
 (defun push-node (node tree)
   (if (null tree)
       node
-      (push node (data (last tree)))))
+      (if (null (subnodes tree))
+	  (setf (subnodes tree) (list node))
+	  ;;(push node (cdr(last(subnodes tree)))))))
+	  (setf (subnodes tree) (append (subnodes tree) (list node))))))
+
+(defun print-node (node)
+  (describe node))
+  ;;(format nil " ~a subnodes: ~a" (data node) (subnodes node)))
+
+(defun print-subnodes-rec (node)
+  (if (null (subnodes node))
+      nil
+      (progn
+	(print-node node)
+	(dolist (subnode (subnodes node)) (print-subnodes-rec subnode)))))

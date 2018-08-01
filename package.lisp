@@ -31,7 +31,8 @@
 	   :create-ast-walk-node :access-walk-node :next-walk-node
 	   :walk-collect-all-ast-nodes :walk-ast-tree-dfs
 	   :match-shallow-ast-node :test-ast-tree :ast-node-mismatch-error
-	   :ast-node-base-class :is-node-type? :make-node :parsed-node :data :symbol))
+	   :ast-node-base-class :make-node :parsed-node :data :symbol :subnodes
+	   :print-subnodes-rec :print-node))
 
 (defpackage :csharp-parser
   (:use :common-lisp :code-generator-utils-space :tokenizer :ast-node-space)

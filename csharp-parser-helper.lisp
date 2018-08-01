@@ -69,7 +69,7 @@
 	(progn (cond ,@body
 		     (t (progn
 			  (if (consp ,node-stack)
-			      (push-node (parse-token-to-ast-node ,tokenizer) ,node-stack)
+			      (push (parse-token-to-ast-node ,tokenizer) ,node-stack)
 			      (setf ,node-stack (list (parse-token-to-ast-node ,tokenizer)))))))
 	       (advanze-token ,tokenizer))
       while (and (not (eq (peek-token ,tokenizer) nil))
