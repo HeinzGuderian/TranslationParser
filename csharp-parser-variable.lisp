@@ -16,9 +16,10 @@
 		      (progn
 			(advanze-token tokenizer)
 			(parse-expression tokenizer))
-		      nil)))
-      (make-ast-node enclosing-node-name
-		     (list visibility-node
-			   (make-ast-node "variable-name" name)
-			   type-node
-			   (make-ast-node "variable-value" value))))))
+		      (make-ast-node "variable-value" ())))
+	   (variable-node (make-ast-node enclosing-node-name ())))
+      (push-node visibility-node variable-node)
+      (push-node (make-ast-node "variable-name" name) variable-node)
+      (push-node type-node variable-node)
+      (push-node (make-ast-node "variable-value" value) variable-node)
+      variable-node)))

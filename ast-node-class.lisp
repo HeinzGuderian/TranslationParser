@@ -16,7 +16,7 @@
 
 (defun make-ast-node (symbol data &optional (class 'ast-node))
   (make-instance class
-		 :symbol symbol
+		 :symbol (make-ast-symbol symbol)
 		 :data (if (consp data) data (list data))))
 
 (defun push-node (node tree)
@@ -33,7 +33,7 @@
 
 (defun print-subnodes-rec (node)
   (if (null (subnodes node))
-      nil
+      (progn (print-node node)nil)
       (progn
 	(print-node node)
 	(dolist (subnode (subnodes node)) (print-subnodes-rec subnode)))))
