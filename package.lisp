@@ -32,7 +32,7 @@
 	   :walk-collect-all-ast-nodes :walk-ast-tree-dfs
 	   :match-shallow-ast-node :test-ast-tree :ast-node-mismatch-error
 	   :ast-node-base-class :make-node :parsed-node :data :symbol :subnodes
-	   :print-subnodes-rec :print-node))
+	   :print-subnodes-rec :print-node :subnth))
 
 (defpackage :csharp-parser
   (:use :common-lisp :code-generator-utils-space :tokenizer :ast-node-space)

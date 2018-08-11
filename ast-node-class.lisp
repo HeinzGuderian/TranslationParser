@@ -37,3 +37,6 @@
       (progn
 	(print-node node)
 	(dolist (subnode (subnodes node)) (print-subnodes-rec subnode)))))
+
+(defun subnth (subnode-index node)
+  (nth subnode-index(subnodes node)))
