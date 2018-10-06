@@ -32,3 +32,39 @@
 (defun strip-string-from-string-list (param-list string-to-strip)
   (delete string-to-strip param-list :test #'string=))
 
+(defun trec (rec &optional (base #'dentity))
+  (labels
+      ((self (tree)
+	 (if (atom tree)
+	     (if (functionp base)
+		 (funcall base tree)
+		 base)
+	     (funcall rec tree
+		      #'(lambda ()
+			  (self (car tree)))
+		      #'(lambda ()
+			  (if (cdr tree)
+			      (self (cdr tree))))))))
+    #'self))
+
+(defun trec-nodes (node-fn succesor-fn)
+  (labels ((continue-callback (node continue-nodes)
+	     #'(lambda () (let ((continues (append (funcall succesor-fn node) continue-nodes)))
+			    (node-trav (car continues) (cdr continues)))))
+	   (node-trav (node continue-nodes)
+	     (if (null node)
+		 nil
+		 (funcall node-fn node (continue-callback node continue-nodes)))))
+    #'(lambda (node) (node-trav node ()))))
+		 
+
+
+;;(let ((x (list 1
+;;	       (list 2 (list 3))
+;;	       (list 4 (list 5)))))
+;;  (funcall (trec-nodes #'(lambda (node continue-fn) (if (eq (car node) 2) node (funcall continue-fn))) #'cdr) x))
+
+;; (let ((x (list 1
+;; 	       (list 2 (list 3))
+;; 	       (list 4 (list 5)))))
+;;   (funcall (trec-nodes #'(lambda (node continue-fn) (cons (car node) (funcall continue-fn))) #'cdr) x))
