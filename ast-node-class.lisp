@@ -50,6 +50,16 @@
 		(mapcar (lambda (sub-node) (list-nodes sub-node))
 			(subnodes node))))))
 
+(defun exist-node-in-tree (search-fn)
+  (traverse-ast-tree #'(lambda (node continue-fn)
+			 (if (funcall search-fn node)
+			     t
+			     (funcall continue-fn)))))
+  
+(defun traverse-ast-tree (node-fn)
+  (trec-nodes node-fn
+	      #'subnodes))
+
 ;; (let ((top-node (make-ast-node "top" 1))
 ;; 		      (child-node-1 (make-ast-node "child of top" 2))
 ;; 		      (child-node-21 (make-ast-node "child of child 1" 3))
@@ -59,3 +69,13 @@
 ;; 		  (push-node child-node-12 top-node)
 ;; 		  (print-subnodes-rec top-node)
 ;; 		  (list-nodes top-node))
+
+;; (let ((top-node (make-ast-node "top" 1))
+;;  		      (child-node-1 (make-ast-node "child of top" 2))
+;;  		      (child-node-21 (make-ast-node "child of child 1" 3))
+;;  		      (child-node-12 (make-ast-node "child of top node" 4)))
+;;  		  (push-node child-node-21 child-node-1)
+;;  		  (push-node child-node-1 top-node)
+;;  		  (push-node child-node-12 top-node)
+;;  		  (let ((fn (AST-NODE-SPACE::EXIST-NODE-IN-TREE #'(lambda (node) (format t "~d" (data node))(eq (car(data node)) 4)))))
+;; 		    (funcall fn top-node)))
