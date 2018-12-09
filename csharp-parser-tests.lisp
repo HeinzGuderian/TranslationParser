@@ -9,6 +9,8 @@
 ;; (parse-csharp (tokenize-csharp-code *code-test-variables-simple*))
 
 ;;(match-shallow-ast-node (cadr(cadddr(parse-csharp(tokenize-csharp-code *code-test-variables-advanced*)))) '(class-visibility "partial" "public"))
+;;(let ((parsed (parse-csharp(tokenize-csharp-code *code-test-variables-simple* ))))
+;;(funcall (exist-node-in-tree #'*code-test-variables-simple-ast-tree*) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
 
 (defparameter *code-test* 
 "public void Start(container as List){
@@ -27,11 +29,63 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 
 (defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
 
-(defparameter *code-test-variables-simple-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "c") (TYPE "int") (VARIABLE-VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE))))
 
-;;(test-ast-tree (parse-csharp(tokenize-csharp-code *code-test-variables-simple*)) '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "c") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VALUE "2"))))
+;;(test-composer (((is-var-sym? "variable-name") (is-class-sym? "class-variable"))
+;;;		((test same-node-symbol? ())))
+(defmacro with-is-symbol (binds &body body)
+  (let ((symbols (mapcar #'(lambda (pair) (gensym)) binds)))
+    `(let* (,@(mapcar #'(lambda (pair symbol)
+			 `( ,symbol (make-ast-symbol ,(cadr pair))))
+		     binds
+		     symbols)
+       ,@(mapcar #'(lambda (pair sym)
+		     `( ,(car pair) (lambda (node)
+				      (same-node-symbol? (symbol-from-ast-node node) ,sym))))
+		 binds
+		 symbols))
+       ,@body)))
 
-;;(walk-collect-all-ast-nodes '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "c") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VALUE "2")))) 
+(defun *code-test-variables-simple-ast-tree* (parsed-tree)
+  (let ((variable-sym (make-ast-symbol "variable-name"))
+	(class-variable-sym (make-ast-symbol "class-variable")))
+    ((lambda (node)
+       (print-node node)
+       (and (same-node-symbol? (symbol-from-ast-node node) class-variable-sym)
+		(some #'(lambda (subnode) (and (same-node-symbol? (symbol-from-ast-node subnode)
+								 variable-sym)
+					       (equal "a" (car (data-from-ast-node subnode)))))
+		      (subnodes node))))
+     parsed-tree)))
+
+  
+
+(defun *code-test-variables-simple-ast-tree2* (node)
+  (with-is-symbol ((variable-sym?  "variable-name")
+		   (class-variable-sym?  "class-variable"))
+    (let ((test1 #'(lambda (node)
+		     (and (funcall class-variable-sym? node)
+			  (some #'(lambda (subnode) (and (funcall variable-sym? subnode)
+							 (equal "a" (car (data-from-ast-node subnode)))))
+				(subnodes node))))))
+      ((lambda (node)(and (funcall test1 node)))
+       node))))
+
+(defun test-node (node-identifier-fn node-test)
+  (lambda (node)
+    (and (funcall node-identifier-fn node)
+	 (funcall node-test node))))
+(defun test-some-subnode (test)
+  (lambda (node) (some test (subnodes node))))
+(defun test-car-data (test-data)
+  (lambda (node) (equal test-data (car (data-from-ast-node node)))))
+
+(defun *code-test-variables-simple-ast-tree3* (node)
+  (with-is-symbol ((variable-sym?  "variable-name")
+		   (class-variable-sym?  "class-variable"))
+    (let ((test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))))
+      ((lambda (node) (funcall test1 node))
+       node))))
+ 
 (defparameter *code-test-variables-simple* 
 " 
 using UnityEngine;

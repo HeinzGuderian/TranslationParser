@@ -34,7 +34,7 @@
 	   :match-shallow-ast-node :test-ast-tree :ast-node-mismatch-error
 	   :ast-node :make-node :parsed-node :data :symbol :subnodes
 	   :print-subnodes-rec :print-node :subnth :list-nodes :traverse-ast-tree
-	   :exist-node-in-tree))
+	   :exist-node-in-tree :call-function-on-every-node))
 
 (defpackage :csharp-parser
   (:use :common-lisp :code-generator-utils-space :tokenizer :ast-node-space)

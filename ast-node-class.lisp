@@ -55,7 +55,12 @@
 			 (if (funcall search-fn node)
 			     t
 			     (funcall continue-fn)))))
-  
+
+(defun call-function-on-every-node (fn)
+  (traverse-ast-tree #'(lambda (node continue-fn)
+			 (funcall fn node)
+			 (funcall continue-fn))))
+
 (defun traverse-ast-tree (node-fn)
   (trec-nodes node-fn
 	      #'subnodes))
