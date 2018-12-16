@@ -57,8 +57,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 		      (subnodes node))))
      parsed-tree)))
 
-  
-
 (defun *code-test-variables-simple-ast-tree2* (node)
   (with-is-symbol ((variable-sym?  "variable-name")
 		   (class-variable-sym?  "class-variable"))
@@ -78,14 +76,32 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
   (lambda (node) (some test (subnodes node))))
 (defun test-car-data (test-data)
   (lambda (node) (equal test-data (car (data-from-ast-node node)))))
+(defmacro test-and-set (place test node)
+  `(when (not,place)
+     (setf ,place (funcall ,test ,node))))
 
 (defun *code-test-variables-simple-ast-tree3* (node)
   (with-is-symbol ((variable-sym?  "variable-name")
 		   (class-variable-sym?  "class-variable"))
-    (let ((test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))))
-      ((lambda (node) (funcall test1 node))
-       node))))
- 
+    (funcall (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))
+	     node)))
+
+;;(funcall (exist-node-in-tree (*code-test-variables-simple-ast-tree4*)) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
+(defun *code-test-variables-simple-ast-tree4* ()
+  (with-is-symbol ((variable-sym? "variable-name")
+		   (class-variable-sym? "class-variable"))
+    (macrolet ((test-and-set (place test node)
+		 `(when (not,place)
+		    (setf ,place (funcall ,test ,node)))))
+      (let ((test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a")))))
+	    (test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b")))))
+	    (test1-value nil)
+	    (test2-value nil))
+	(lambda (node) 
+	  (test-and-set test1-value test1 node)
+	  (test-and-set test2-value test2 node)
+	  (and test1-value test2-value))))))
+
 (defparameter *code-test-variables-simple* 
 " 
 using UnityEngine;
