@@ -16,7 +16,6 @@
 "public void Start(container as List){
      return \"ArmyEconomy\";} ")
 
-
 (defparameter *code-test-class-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "}"))
 (defparameter *code-test-class-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI"))))
 (defparameter *code-test-class* 
@@ -29,9 +28,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 
 (defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
 
-
-;;(test-composer (((is-var-sym? "variable-name") (is-class-sym? "class-variable"))
-;;;		((test same-node-symbol? ())))
 (defmacro with-is-symbol (binds &body body)
   (let ((symbols (mapcar #'(lambda (pair) (gensym)) binds)))
     `(let* (,@(mapcar #'(lambda (pair symbol)
@@ -49,29 +45,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
   `(when (not,place)
      (setf ,place (funcall ,test ,node))))
 
-(defun *code-test-variables-simple-ast-tree* (parsed-tree)
-  (let ((variable-sym (make-ast-symbol "variable-name"))
-	(class-variable-sym (make-ast-symbol "class-variable")))
-    ((lambda (node)
-       (print-node node)
-       (and (same-node-symbol? (symbol-from-ast-node node) class-variable-sym)
-		(some #'(lambda (subnode) (and (same-node-symbol? (symbol-from-ast-node subnode)
-								 variable-sym)
-					       (equal "a" (car (data-from-ast-node subnode)))))
-		      (subnodes node))))
-     parsed-tree)))
-
-(defun *code-test-variables-simple-ast-tree2* (node)
-  (with-is-symbol ((variable-sym?  "variable-name")
-		   (class-variable-sym?  "class-variable"))
-    (let ((test1 #'(lambda (node)
-		     (and (funcall class-variable-sym? node)
-			  (some #'(lambda (subnode) (and (funcall variable-sym? subnode)
-							 (equal "a" (car (data-from-ast-node subnode)))))
-				(subnodes node))))))
-      ((lambda (node)(and (funcall test1 node)))
-       node))))
-
 (defun test-node (node-identifier-fn node-test)
   (lambda (node)
     (and (funcall node-identifier-fn node)
@@ -84,29 +57,7 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
   `(when (not,place)
      (setf ,place (funcall ,test ,node))))
 
-(defun *code-test-variables-simple-ast-tree3* (node)
-  (with-is-symbol ((variable-sym?  "variable-name")
-		   (class-variable-sym?  "class-variable"))
-    (funcall (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))
-	     node)))
-
-;;(funcall (exist-node-in-tree (*code-test-variables-simple-ast-tree4*)) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
-(defun *code-test-variables-simple-ast-tree4* ()
-  (with-is-symbol ((variable-sym? "variable-name")
-		   (class-variable-sym? "class-variable"))
-    (macrolet ((test-and-set (place test node)
-		 `(when (not,place)
-		    (setf ,place (funcall ,test ,node)))))
-      (let ((test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a")))))
-	    (test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b")))))
-	    (test1-value nil)
-	    (test2-value nil))
-	(lambda (node) 
-	  (test-and-set test1-value test1 node)
-	  (test-and-set test2-value test2 node)
-	  (and test1-value test2-value))))))
-
-(defun *code-test-variables-simple-ast-tree5* ()
+(defun **Macro-template-function** ()
   (with-is-symbol ((variable-sym? "variable-name")
 		   (class-variable-sym? "class-variable"))
     (let ((test1 (gensym))
@@ -117,11 +68,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 	  (and test1 test2)))))
 
 ;;(create-test-defun *code-test-variables-simple-ast-tree4* ((variable-sym? "variable-name") (class-variable-sym? "class-variable"))
-;;   ((test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))
-;;    (test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))) )))
-
-;;csharp-parser-helper.lisp (defmacro define-match-fn (fn-name-supplied symbol-string)
-;;(create-test-defun test1111 ((variable-sym? "variable-name") (class-variable-sym? "class-variable")) ((test-some-subnode (test-node variable-sym? (test-car-data "a"))) (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))))
+;;  ((test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))
+;;   (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))))
 ;;(funcall (exist-node-in-tree (test1111)) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
 (defmacro create-test-defun (name variables-check tests)
   (let ((symbols (mapcar #'(lambda (pair) (declare (ignore pair)) (gensym)) tests)))
