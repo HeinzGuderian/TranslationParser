@@ -45,6 +45,10 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 		 symbols))
        ,@body)))
 
+(defmacro test-and-set (place test node)
+  `(when (not,place)
+     (setf ,place (funcall ,test ,node))))
+
 (defun *code-test-variables-simple-ast-tree* (parsed-tree)
   (let ((variable-sym (make-ast-symbol "variable-name"))
 	(class-variable-sym (make-ast-symbol "class-variable")))
@@ -101,6 +105,36 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 	  (test-and-set test1-value test1 node)
 	  (test-and-set test2-value test2 node)
 	  (and test1-value test2-value))))))
+
+(defun *code-test-variables-simple-ast-tree5* ()
+  (with-is-symbol ((variable-sym? "variable-name")
+		   (class-variable-sym? "class-variable"))
+    (let ((test1 (gensym))
+	  (test2 (gensym)))
+      (lambda (node) 
+	  (test-and-set test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a")))) node)
+	  (test-and-set test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b")))) node)
+	  (and test1 test2)))))
+
+;;(create-test-defun *code-test-variables-simple-ast-tree4* ((variable-sym? "variable-name") (class-variable-sym? "class-variable"))
+;;   ((test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))
+;;    (test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))) )))
+
+;;csharp-parser-helper.lisp (defmacro define-match-fn (fn-name-supplied symbol-string)
+;;(create-test-defun test1111 ((variable-sym? "variable-name") (class-variable-sym? "class-variable")) ((test-some-subnode (test-node variable-sym? (test-car-data "a"))) (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))))
+;;(funcall (exist-node-in-tree (test1111)) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
+(defmacro create-test-defun (name variables-check tests)
+  (let ((symbols (mapcar #'(lambda (pair) (declare (ignore pair)) (gensym)) tests)))
+    `(defun ,name ()
+       (let (,@symbols)
+	 (with-is-symbol ,variables-check
+	   (lambda (node)
+	     ,@(mapcar #'(lambda (test symbol) 
+			   `(test-and-set ,symbol ,test node))
+		       tests
+		       symbols)
+	     (and ,@(mapcar (lambda (sym) sym)
+			    symbols))))))))
 
 (defparameter *code-test-variables-simple* 
 " 
