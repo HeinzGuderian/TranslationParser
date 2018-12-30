@@ -27,8 +27,10 @@
 	 (funcall node-test node))))
 (defun test-some-subnode (test)
   (lambda (node) (some test (subnodes node))))
-(defun test-car-data (test-data)
-  (lambda (node) (equal test-data (car (data-from-ast-node node)))))
+(defun test-car-data (test-data &optional (test-fn #'equal))
+  (lambda (node) (funcall test-fn test-data (car (data-from-ast-node node)))))
+(defun test-data (test-data &optional (test-fn #'equal))
+  (lambda (node) (funcall test-fn test-data (data-from-ast-node node))))
 (defun **Macro-template-function** ()
   (with-is-symbol ((variable-sym? "variable-name")
 		   (class-variable-sym? "class-variable"))
@@ -38,9 +40,7 @@
 	  (test-and-set test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a")))) node)
 	  (test-and-set test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b")))) node)
 	  (and test1 test2)))))
-;;(create-test-defun *code-test-variables-simple-ast-tree4* ((variable-sym? "variable-name") (class-variable-sym? "class-variable"))
-;;  ((test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))
-;;   (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))))
+
 ;;(funcall (exist-node-in-tree (test1111)) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
 (defmacro create-test-defun (name variables-check tests)
   (let ((symbols (mapcar #'(lambda (pair) (declare (ignore pair)) (gensym)) tests)))
@@ -55,18 +55,18 @@
 	     (and ,@(mapcar (lambda (sym) sym)
 			    symbols))))))))
 
-(defparameter *code-test* 
-"public void Start(container as List){
-     return \"ArmyEconomy\";} ")
 (defparameter *code-test-class-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "}"))
-(defparameter *code-test-class-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI"))))
 (defparameter *code-test-class* 
 " 
 using UnityEngine;
 using UnityEngine;
 
-partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
-  )
+partial public class FactoryEconomy : BuildingEconomy, IGUI {}")
+(create-test-defun *code-test-class-ast-tree* ((class-sym? "class-declaration") (class-visibility-sym? "class-visibility")
+					       (class-name-sym? "class-name") (class-inheritances-sym? "class-inheritances"))
+  ((test-node class-sym? (test-some-subnode (test-node class-visibility-sym? (test-data (list "partial" "public")))))
+   (test-node class-sym? (test-some-subnode (test-node class-name-sym? (test-car-data "FactoryEconomy"))))
+   (test-node class-sym? (test-some-subnode (test-node class-inheritances-sym? (test-data (list "BuildingEconomy" "IGUI")))))))
 
 (defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
 (defparameter *code-test-variables-simple* 
@@ -252,7 +252,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 		   (handler-case (funcall (funcall test-ast-tree test-fn) (funcall parse-code parsed-code))
 		     (ast-node-mismatch-error (condition)
 		       (format t "~S" (ast-node-space::text condition)) nil)))))
-    (and (funcall t-test #'*code-test-variables-simple-ast-tree* *code-test-variables-simple*))))
+    (and (funcall t-test #'*code-test-variables-simple-ast-tree* *code-test-variables-simple*)
+	 (funcall t-test #'*code-test-class-ast-tree* *code-test-class*))))
 
 "
 
