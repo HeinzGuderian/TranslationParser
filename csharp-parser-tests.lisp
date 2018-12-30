@@ -26,8 +26,6 @@ using UnityEngine;
 partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 )
 
-(defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
-
 (defmacro with-is-symbol (binds &body body)
   (let ((symbols (mapcar #'(lambda (pair) (gensym)) binds)))
     `(let* (,@(mapcar #'(lambda (pair symbol)
@@ -84,6 +82,7 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 	     (and ,@(mapcar (lambda (sym) sym)
 			    symbols))))))))
 
+(defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
 (defparameter *code-test-variables-simple* 
 " 
 using UnityEngine;
@@ -94,8 +93,10 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI
  int c;
  private int b = 2;
  private int a;
-}"
-  )
+}")
+(create-test-defun *code-test-variables-simple-ast-tree* ((variable-sym? "variable-name") (class-variable-sym? "class-variable"))
+  ((test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))
+   (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))))
 
 (defparameter *code-test-variables-custom-type-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "public" "GameObject" "_playerGameObject" ";" "TeamScript.PlayerNumberEnum" "_winningPlayer" ";" "private" "int" "a" "=" "2" ";" "}"))
 
@@ -260,23 +261,12 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 
 (defun run-ast-test-suite-csharp ()
   (let* ((parse-code (lambda (code) (parse-csharp(tokenize-csharp-code code))))
-	 (test-ast-tree (lambda (source test-tree) (test-ast-tree (funcall parse-code source)
-								  test-tree)))
-	 (t-test (lambda (test-string control-tokens)
-		   (handler-case (funcall test-ast-tree test-string control-tokens)
+	 (test-ast-tree (lambda (test-fn) (exist-node-in-tree (funcall test-fn))))
+	 (t-test (lambda (test-fn parsed-code)
+		   (handler-case (funcall (funcall test-ast-tree test-fn) (funcall parse-code parsed-code))
 		     (ast-node-mismatch-error (condition)
 		       (format t "~S" (ast-node-space::text condition)) nil)))))
-    (and (funcall t-test *code-test-class* *code-test-class-ast-tree*)
-	 (funcall t-test *code-test-variables-simple* *code-test-variables-simple-ast-tree*)
-	 (funcall t-test *code-test-variables-custom-type* *code-test-variables-custom-type-ast-tree* )
-	 (funcall t-test *code-test-variables-arrays* *code-test-variables-arrays-ast-tree* )
-	 (funcall t-test *code-test-class-function* *code-test-class-function-ast-tree*)
-	 (funcall t-test *code-test-expression-archimetic-simple* *code-test-expression-archimetic-simple-ast-tree*)
-	 (funcall t-test *code-test-expression-archimetic-nested* *code-test-expression-archimetic-nested-ast-tree*)
-	 (funcall t-test *code-test-expression-archimetic-nested-minus* *code-test-expression-archimetic-nested-minus-ast-tree*)
-	 (funcall t-test *code-test-class-function-call* *code-test-class-function-call-ast-tree*)
-	 (funcall t-test *code-test-class-function-call-in-expression* *code-test-class-function-call-in-expression-ast-tree*)
-	 (funcall t-test *code-test-class-function-call-in-expression-params-expression* *code-test-class-function-call-in-expression-params-expression-ast-tree*))))
+    (and (funcall t-test #'*code-test-variables-simple-ast-tree* *code-test-variables-simple*))))
 
 "
 
