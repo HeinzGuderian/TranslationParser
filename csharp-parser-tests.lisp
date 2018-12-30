@@ -1,31 +1,11 @@
 (in-package :csharp-parser) 
-
 (declaim (optimize (debug 3)))
-
 ;; (in-package :csharp-parser)
 ;; (defparameter test (parse-csharp (tokenize-csharp-code *code-test-class*)))
 ;; command for generating test matches (print-tokens (tokenize-csharp-code *code-test-variables-advanced* ))
 ;; (print-tokens (tokenize-csharp-code *code-test-variables-simple* ))
 ;; (parse-csharp (tokenize-csharp-code *code-test-variables-simple*))
-
 ;;(match-shallow-ast-node (cadr(cadddr(parse-csharp(tokenize-csharp-code *code-test-variables-advanced*)))) '(class-visibility "partial" "public"))
-;;(let ((parsed (parse-csharp(tokenize-csharp-code *code-test-variables-simple* ))))
-;;(funcall (exist-node-in-tree #'*code-test-variables-simple-ast-tree*) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
-
-(defparameter *code-test* 
-"public void Start(container as List){
-     return \"ArmyEconomy\";} ")
-
-(defparameter *code-test-class-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "}"))
-(defparameter *code-test-class-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI"))))
-(defparameter *code-test-class* 
-" 
-using UnityEngine;
-using UnityEngine;
-
-partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
-)
-
 (defmacro with-is-symbol (binds &body body)
   (let ((symbols (mapcar #'(lambda (pair) (gensym)) binds)))
     `(let* (,@(mapcar #'(lambda (pair symbol)
@@ -38,11 +18,9 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 		 binds
 		 symbols))
        ,@body)))
-
 (defmacro test-and-set (place test node)
   `(when (not,place)
      (setf ,place (funcall ,test ,node))))
-
 (defun test-node (node-identifier-fn node-test)
   (lambda (node)
     (and (funcall node-identifier-fn node)
@@ -51,10 +29,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
   (lambda (node) (some test (subnodes node))))
 (defun test-car-data (test-data)
   (lambda (node) (equal test-data (car (data-from-ast-node node)))))
-(defmacro test-and-set (place test node)
-  `(when (not,place)
-     (setf ,place (funcall ,test ,node))))
-
 (defun **Macro-template-function** ()
   (with-is-symbol ((variable-sym? "variable-name")
 		   (class-variable-sym? "class-variable"))
@@ -64,7 +38,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 	  (test-and-set test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a")))) node)
 	  (test-and-set test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b")))) node)
 	  (and test1 test2)))))
-
 ;;(create-test-defun *code-test-variables-simple-ast-tree4* ((variable-sym? "variable-name") (class-variable-sym? "class-variable"))
 ;;  ((test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a"))))
 ;;   (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))))
@@ -81,6 +54,19 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
 		       symbols)
 	     (and ,@(mapcar (lambda (sym) sym)
 			    symbols))))))))
+
+(defparameter *code-test* 
+"public void Start(container as List){
+     return \"ArmyEconomy\";} ")
+(defparameter *code-test-class-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "}"))
+(defparameter *code-test-class-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI"))))
+(defparameter *code-test-class* 
+" 
+using UnityEngine;
+using UnityEngine;
+
+partial public class FactoryEconomy : BuildingEconomy, IGUI {}"
+  )
 
 (defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
 (defparameter *code-test-variables-simple* 
