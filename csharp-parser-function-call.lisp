@@ -15,7 +15,7 @@
 		   (parse-arguments tokenizer expression-node-list)))))
     (nreverse (parse-arguments tokenizer ()))))
 
-(defun make-function-call (tokenizer node-stack)
+(defun make-function-call-node (tokenizer node-stack)
   (let ((fn-name (make-ast-node "function-call-name" (current-token tokenizer))))
     (advanze-token tokenizer)
     (let* ((params (make-ast-node "function-arguments" (parse-function-call-arguments tokenizer)))
