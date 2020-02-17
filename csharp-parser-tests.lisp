@@ -37,9 +37,9 @@
     (let ((test1 (gensym))
 	  (test2 (gensym)))
       (lambda (node) 
-	  (test-and-set test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a")))) node)
-	  (test-and-set test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b")))) node)
-	  (and test1 test2)))))
+	(test-and-set test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a")))) node)
+	(test-and-set test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b")))) node)
+	(and test1 test2)))))
 
 ;;(funcall (exist-node-in-tree (test1111)) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
 (defmacro create-test-defun (name variables-check tests)
@@ -62,11 +62,21 @@ using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI {}")
-(create-test-defun *code-test-class-ast-tree* ((class-sym? "class-declaration") (class-visibility-sym? "class-visibility")
-					       (class-name-sym? "class-name") (class-inheritances-sym? "class-inheritances"))
-  ((test-node class-sym? (test-some-subnode (test-node class-visibility-sym? (test-data (list "partial" "public")))))
-   (test-node class-sym? (test-some-subnode (test-node class-name-sym? (test-car-data "FactoryEconomy"))))
-   (test-node class-sym? (test-some-subnode (test-node class-inheritances-sym? (test-data (list "BuildingEconomy" "IGUI")))))))
+(create-test-defun *code-test-class-ast-tree*
+		   ((class-sym? "class-declaration") (class-visibility-sym? "class-visibility")
+		    (class-name-sym? "class-name") (class-inheritances-sym? "class-inheritances"))
+		   ((test-node class-sym?
+			       (test-some-subnode
+				(test-node class-visibility-sym?
+					   (test-data (list "partial" "public")))))
+		    (test-node class-sym?
+			       (test-some-subnode
+				(test-node class-name-sym?
+					   (test-car-data "FactoryEconomy"))))
+		    (test-node class-sym?
+			       (test-some-subnode
+				(test-node class-inheritances-sym?
+					   (test-data (list "BuildingEconomy" "IGUI")))))))
 
 (defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
 (defparameter *code-test-variables-simple* 
@@ -76,14 +86,24 @@ using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI 
 {
- int c;
- private int b = 2;
- private int a;
+int c;
+private int b = 2;
+private int a;
 }")
-(create-test-defun *code-test-variables-simple-ast-tree* ((variable-sym? "variable-name") (class-variable-sym? "class-variable"))
-		   ((test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "c"))))
-		    (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b"))))
-		    (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "c"))))))
+(create-test-defun *code-test-variables-simple-ast-tree*
+		   ((variable-sym? "variable-name") (class-variable-sym? "class-variable"))
+		   ((test-node class-variable-sym?
+			       (test-some-subnode
+				(test-node variable-sym?
+					   (test-car-data "c"))))
+		    (test-node class-variable-sym?
+			       (test-some-subnode
+				(test-node variable-sym?
+					   (test-car-data "b"))))
+		    (test-node class-variable-sym?
+			       (test-some-subnode
+				(test-node variable-sym?
+					   (test-car-data "c"))))))
 
 (defparameter *code-test-variables-custom-type-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "public" "GameObject" "_playerGameObject" ";" "TeamScript.PlayerNumberEnum" "_winningPlayer" ";" "private" "int" "a" "=" "2" ";" "}"))
 (defparameter *code-test-variables-custom-type* 
@@ -92,13 +112,17 @@ using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
-      public GameObject _playerGameObject;
-      TeamScript.PlayerNumberEnum _winningPlayer;
-      private int a = 2;
+  public GameObject _playerGameObject;
+  TeamScript.PlayerNumberEnum _winningPlayer;
+  private int a = 2;
 }
 ")
-(create-test-defun *code-test-variables-custom-type-ast-tree* ((variable-type-sym? "type") (class-variable-sym? "class-variable"))
-		   ((test-node class-variable-sym? (test-some-subnode (test-node variable-type-sym? (test-car-data "GameObject"))))))
+(create-test-defun *code-test-variables-custom-type-ast-tree*
+		   ((variable-type-sym? "type") (class-variable-sym? "class-variable"))
+		   ((test-node class-variable-sym?
+			       (test-some-subnode
+				(test-node variable-type-sym?
+					   (test-car-data "GameObject"))))))
 
 (defparameter *code-test-variables-arrays-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "[" "]" "d" ";" "private" "int" "a" "=" "2" ";" "}"))
 (defparameter *code-test-variables-arrays* 
@@ -107,12 +131,16 @@ using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
-      private int[] d;
-      private int a = 2;
+  private int[] d;
+  private int a = 2;
 }
 ")
-(create-test-defun *code-test-variables-arrays-ast-tree* ((variable-type-sym? "type") (class-variable-sym? "class-variable"))
-		   ((test-node class-variable-sym? (test-some-subnode (test-node variable-type-sym? (test-car-data "int[]"))))))
+(create-test-defun *code-test-variables-arrays-ast-tree*
+	       ((variable-type-sym? "type") (class-variable-sym? "class-variable"))
+	       ((test-node class-variable-sym?
+			   (test-some-subnode
+			    (test-node variable-type-sym?
+				       (test-car-data "int[]"))))))
 
 (defparameter *code-test-class-function-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "2" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "3" ";" "return" "b" ";" "}" "private" "int" "e" "=" "5" ";" "}" ))
 (defparameter *code-test-class-function*
@@ -121,16 +149,23 @@ using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
-      private int a = 2;
-      public int add(int b, int c){
-          var d = 3;
-          return b;
-      }
-      private int e = 5;
+  private int a = 2;
+  public int add(int b, int c){
+      var d = 3;
+      return b;
+  }
+  private int e = 5;
 }
 ")
-(create-test-defun *code-test-class-function-ast-tree* ((function-sym? "function-node")	(function-name-sym? "function-name") (function-declaration? "function-declaration"))
-		   ((test-node function-sym?(test-some-subnode (test-node function-declaration?(test-some-subnode (test-node function-name-sym? (test-car-data "add"))))))))
+(create-test-defun *code-test-class-function-ast-tree*
+		   ((function-sym? "function-node") (function-name-sym? "function-name")
+		    (function-declaration? "function-declaration"))
+		   ((test-node function-sym?
+			       (test-some-subnode
+				(test-node function-declaration?
+					   (test-some-subnode
+					    (test-node function-name-sym?
+						       (test-car-data "add"))))))))
 
 (defparameter *code-test-expression-archimetic-simple-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2" "+" "3" ";" "}"))
 (defparameter *code-test-expression-archimetic-simple*
@@ -138,7 +173,7 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 using UnityEngine;
 
 public class FactoryEconomy{
-      private int a = 2+3;
+  private int a = 2+3;
 }
 ")
 
@@ -148,8 +183,8 @@ public class FactoryEconomy{
 using UnityEngine;
 
 public class FactoryEconomy{
-      private int a = 2+(3+1)-5;
-      private int b = 10;
+  private int a = 2+(3+1)-5;
+  private int b = 10;
 }
 ")
 
@@ -159,8 +194,8 @@ public class FactoryEconomy{
 using UnityEngine;
 
 public class FactoryEconomy{
-      private int a = 2+(-3+1)-5;
-      private int b = 10;
+  private int a = 2+(-3+1)-5;
+  private int b = 10;
 }
 ")
 
@@ -171,13 +206,13 @@ using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
-      private int a = 1;
-      public int add(int b, int c){
-          var d = 2;
-          e(3,4, 5);
-          return b;
-      }
-      private int f = 6;
+  private int a = 1;
+  public int add(int b, int c){
+      var d = 2;
+      e(3,4, 5);
+      return b;
+  }
+  private int f = 6;
 }
 ")
 
@@ -188,13 +223,13 @@ using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
-      private int a = 1;
-      public int add(int b, int c){
-          var d = 2;
-          var t = e(3,4, 5);
-          return b;
-      }
-      private int f = 6;
+  private int a = 1;
+  public int add(int b, int c){
+      var d = 2;
+      var t = e(3,4, 5);
+      return b;
+  }
+  private int f = 6;
 }
 ")
 
@@ -205,13 +240,13 @@ using UnityEngine;
 using UnityEngine;
 
 partial public class FactoryEconomy : BuildingEconomy, IGUI {
-      private int a = 1;
-      public int add(int b, int c){
-          var d = 2;
-          var t = e(3+5,a, c-d);
-          return b;
-      }
-      private int f = 6;
+  private int a = 1;
+  public int add(int b, int c){
+      var d = 2;
+      var t = e(3+5,a, c-d);
+      return b;
+  }
+  private int f = 6;
 }
 ")
 
@@ -244,8 +279,8 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 		   (handler-case (funcall (funcall test-ast-tree test-fn) (funcall parse-code parsed-code))
 		     (ast-node-mismatch-error (condition)
 		       (format t "~S" (ast-node-space::text condition)) nil)))))
-    (and (funcall t-test #'*code-test-variables-simple-ast-tree* *code-test-variables-simple*)
-	 (funcall t-test #'*code-test-class-ast-tree* *code-test-class*)
+    (and (funcall t-test #'*code-test-class-ast-tree* *code-test-class*)
+	 (funcall t-test #'*code-test-variables-simple-ast-tree* *code-test-variables-simple*)
 	 (funcall t-test #'*code-test-variables-custom-type-ast-tree* *code-test-variables-custom-type*)
 	 (funcall t-test #'*code-test-variables-arrays-ast-tree* *code-test-variables-arrays*)
 	 (funcall t-test #'*code-test-class-function-ast-tree* *code-test-class-function*))))
