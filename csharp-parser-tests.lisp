@@ -86,7 +86,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI
 		    (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "c"))))))
 
 (defparameter *code-test-variables-custom-type-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "public" "GameObject" "_playerGameObject" ";" "TeamScript.PlayerNumberEnum" "_winningPlayer" ";" "private" "int" "a" "=" "2" ";" "}"))
-(defparameter *code-test-variables-custom-type-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "public") (VARIABLE-NAME "_playerGameObject") (TYPE "GameObject") (VARIABLE-VALUE)) (CLASS-VARIABLE (VISIBILITY) (VARIABLE-NAME "_winningPlayer") (TYPE "TeamScript.PlayerNumberEnum") (VARIABLE-VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2"))))) )
 (defparameter *code-test-variables-custom-type* 
 " 
 using UnityEngine;
@@ -102,7 +101,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 		   ((test-node class-variable-sym? (test-some-subnode (test-node variable-type-sym? (test-car-data "GameObject"))))))
 
 (defparameter *code-test-variables-arrays-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "[" "]" "d" ";" "private" "int" "a" "=" "2" ";" "}"))
-(defparameter *code-test-variables-arrays-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "d") (TYPE "int[]") (VARIABLE-VALUE)) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2"))))) )
 (defparameter *code-test-variables-arrays* 
 " 
 using UnityEngine;
@@ -117,7 +115,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 		   ((test-node class-variable-sym? (test-some-subnode (test-node variable-type-sym? (test-car-data "int[]"))))))
 
 (defparameter *code-test-class-function-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "2" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "3" ";" "return" "b" ";" "}" "private" "int" "e" "=" "5" ";" "}" ))
-(defparameter *code-test-class-function-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "3")))) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "e") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "5"))))))
 (defparameter *code-test-class-function*
 " 
 using UnityEngine;
@@ -136,7 +133,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 		   ((test-node function-sym?(test-some-subnode (test-node function-declaration?(test-some-subnode (test-node function-name-sym? (test-car-data "add"))))))))
 
 (defparameter *code-test-expression-archimetic-simple-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2" "+" "3" ";" "}"))
-(defparameter *code-test-expression-archimetic-simple-ast-tree* '((FILE "name") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "public") (CLASS-NAME "FactoryEconomy")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (EXPRESSION-VALUE (TYPE "number") (VALUE "3"))))))
 (defparameter *code-test-expression-archimetic-simple*
 " 
 using UnityEngine;
@@ -147,7 +143,6 @@ public class FactoryEconomy{
 ")
 
 (defparameter *code-test-expression-archimetic-nested-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2" "+" "(" "3" "+" "1" ")" "-" "5" ";" "private" "int" "b" "=" "10" ";" "}"))
-(defparameter *code-test-expression-archimetic-nested-ast-tree* '((FILE "name") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "public") (CLASS-NAME "FactoryEconomy")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (NESTED-EXPRESSION (EXPRESSION-VALUE (TYPE "number") (VALUE "3")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (EXPRESSION-VALUE (TYPE "number") (VALUE "1"))) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "-")) (EXPRESSION-VALUE (TYPE "number") (VALUE "5")))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "10"))))))
 (defparameter *code-test-expression-archimetic-nested*
 " 
 using UnityEngine;
@@ -159,7 +154,6 @@ public class FactoryEconomy{
 ")
 
 (defparameter *code-test-expression-archimetic-nested-minus-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2" "+" "(" "-" "3" "+" "1" ")" "-" "5" ";" "private" "int" "b" "=" "10" ";" "}"))
-(defparameter *code-test-expression-archimetic-nested-minus-ast-tree* '((FILE "name") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "public") (CLASS-NAME "FactoryEconomy")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (NESTED-EXPRESSION (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "-")) (EXPRESSION-VALUE (TYPE "number") (VALUE "3")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (EXPRESSION-VALUE (TYPE "number") (VALUE "1"))) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "-")) (EXPRESSION-VALUE (TYPE "number") (VALUE "5")))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "b") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "10"))))))
 (defparameter *code-test-expression-archimetic-nested-minus*
 " 
 using UnityEngine;
@@ -170,8 +164,7 @@ public class FactoryEconomy{
 }
 ")
 
-(defparameter *code-test-class-function-call-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "e" "(" "3" "," "4" "," "5" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))
-(defparameter *code-test-class-function-call-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "1")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-CALL (FUNCTION-CALL-NAME "e") (FUNCTION-ARGUMENTS ((EXPRESSION-VALUE (TYPE "number") (VALUE "3"))) ((EXPRESSION-VALUE (TYPE "number") (VALUE "4"))) ((EXPRESSION-VALUE (TYPE "number") (VALUE "5"))))) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "f") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "6"))))))		 
+(defparameter *code-test-class-function-call-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "e" "(" "3" "," "4" "," "5" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))		 
 (defparameter *code-test-class-function-call*
 " 
 using UnityEngine;
@@ -189,7 +182,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 ")
 
 (defparameter *code-test-class-function-call-in-expression-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "var" "t" "=" "e" "(" "3" "," "4" "," "5" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))
-(defparameter *code-test-class-function-call-in-expression-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "1")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "t") (TYPE "var") (VARIABLE-VALUE (FUNCTION-CALL (FUNCTION-CALL-NAME "e") (FUNCTION-ARGUMENTS ((EXPRESSION-VALUE (TYPE "number") (VALUE "3"))) ((EXPRESSION-VALUE (TYPE "number") (VALUE "4"))) ((EXPRESSION-VALUE (TYPE "number") (VALUE "5"))))))) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "f") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "6"))))))
 (defparameter *code-test-class-function-call-in-expression*
 " 
 using UnityEngine;
@@ -207,7 +199,6 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 ")
 
 (defparameter *code-test-class-function-call-in-expression-params-expression-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "var" "t" "=" "e" "(" "3" "+" "5" "," "a" "," "c" "-" "d" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}"))
-(defparameter *code-test-class-function-call-in-expression-params-expression-ast-tree* '((FILE "name") (USING "UnityEngine") (USING "UnityEngine") (CLASS-DECLARATION (CLASS-VISIBILITY "partial" "public") (CLASS-NAME "FactoryEconomy") (CLASS-INHERITANCES "BuildingEconomy" "IGUI")) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "a") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "1")))) (FUNCTION-NODE (VISIBILITY "public") (TYPE "int") (FUNCTION-NAME "add") (FUNCTION-PARAMETERS (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "b")) (FUNCTION-PARAMETER (TYPE "int") (VARIABLE-NAME "c"))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "d") (TYPE "var") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "2")))) (FUNCTION-VARIABLE (VISIBILITY) (VARIABLE-NAME "t") (TYPE "var") (VARIABLE-VALUE (FUNCTION-CALL (FUNCTION-CALL-NAME "e") (FUNCTION-ARGUMENTS ((EXPRESSION-VALUE (TYPE "number") (VALUE "3")) (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "+")) (EXPRESSION-VALUE (TYPE "number") (VALUE "5"))) ((IDENTIFIER "a")) ((IDENTIFIER "c") (EXPRESSION-VALUE (TYPE "math-operator") (VALUE "-")) (IDENTIFIER "d")))))) (FUNCTION-RETURN (IDENTIFIER "b"))) (CLASS-VARIABLE (VISIBILITY "private") (VARIABLE-NAME "f") (TYPE "int") (VARIABLE-VALUE (EXPRESSION-VALUE (TYPE "number") (VALUE "6"))))))
 (defparameter *code-test-class-function-call-in-expression-params-expression*
 " 
 using UnityEngine;
@@ -258,13 +249,3 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 	 (funcall t-test #'*code-test-variables-custom-type-ast-tree* *code-test-variables-custom-type*)
 	 (funcall t-test #'*code-test-variables-arrays-ast-tree* *code-test-variables-arrays*)
 	 (funcall t-test #'*code-test-class-function-ast-tree* *code-test-class-function*))))
-
-"
-
-      private List<int> _playerGameObjectList;
-      bool _haveConceded = false;
-      private int a = 3;
-      private int b = 3;
-      var b = 2;
-"
-
