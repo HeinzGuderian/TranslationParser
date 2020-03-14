@@ -37,8 +37,10 @@
     (let ((test1 (gensym))
 	  (test2 (gensym)))
       (lambda (node) 
-	(test-and-set test1 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "a")))) node)
-	(test-and-set test2 (test-node class-variable-sym? (test-some-subnode (test-node variable-sym? (test-car-data "b")))) node)
+	(test-and-set test1 (test-node class-variable-sym?
+				       (test-some-subnode (test-node variable-sym? (test-car-data "a")))) node)
+	(test-and-set test2 (test-node class-variable-sym?
+				       (test-some-subnode (test-node variable-sym? (test-car-data "b")))) node)
 	(and test1 test2)))))
 
 ;;(funcall (exist-node-in-tree (test1111)) (parse-csharp (tokenize-csharp-code *code-test-variables-simple*)))
@@ -55,7 +57,9 @@
 	     (and ,@(mapcar (lambda (sym) sym)
 			    symbols))))))))
 
-(defparameter *code-test-class-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "}"))
+(defparameter *code-test-class-tokens*
+  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public"
+	"class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "}"))
 (defparameter *code-test-class* 
 " 
 using UnityEngine;
@@ -78,7 +82,10 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {}")
 				(test-node class-inheritances-sym?
 					   (test-data (list "BuildingEconomy" "IGUI")))))))
 
-(defparameter *code-test-variables-simple-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
+(defparameter *code-test-variables-simple-tokens*
+  (list "using" "UnityEngine"
+	";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy"
+	"," "IGUI" "{" "int" "c" ";" "private" "int" "b" "=" "2" ";" "private" "int" "a" ";" "}" ))
 (defparameter *code-test-variables-simple* 
 " 
 using UnityEngine;
@@ -105,7 +112,10 @@ private int a;
 				(test-node variable-sym?
 					   (test-car-data "c"))))))
 
-(defparameter *code-test-variables-custom-type-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "public" "GameObject" "_playerGameObject" ";" "TeamScript.PlayerNumberEnum" "_winningPlayer" ";" "private" "int" "a" "=" "2" ";" "}"))
+(defparameter *code-test-variables-custom-type-tokens*
+  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy"
+	":" "BuildingEconomy" "," "IGUI" "{" "public" "GameObject" "_playerGameObject" ";"
+	"TeamScript.PlayerNumberEnum" "_winningPlayer" ";" "private" "int" "a" "=" "2" ";" "}"))
 (defparameter *code-test-variables-custom-type* 
 " 
 using UnityEngine;
@@ -124,7 +134,10 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 				(test-node variable-type-sym?
 					   (test-car-data "GameObject"))))))
 
-(defparameter *code-test-variables-arrays-tokens*  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "[" "]" "d" ";" "private" "int" "a" "=" "2" ";" "}"))
+(defparameter *code-test-variables-arrays-tokens*
+  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class"
+	"FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{"
+	"private" "int" "[" "]" "d" ";" "private" "int" "a" "=" "2" ";" "}"))
 (defparameter *code-test-variables-arrays* 
 " 
 using UnityEngine;
@@ -142,7 +155,11 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 			    (test-node variable-type-sym?
 				       (test-car-data "int[]"))))))
 
-(defparameter *code-test-class-function-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "2" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "3" ";" "return" "b" ";" "}" "private" "int" "e" "=" "5" ";" "}" ))
+(defparameter *code-test-class-function-tokens*
+  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":"
+	"BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "2" ";" "public" "int" "add"
+	"(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "3" ";" "return" "b" ";" "}"
+	"private" "int" "e" "=" "5" ";" "}" ))
 (defparameter *code-test-class-function*
 " 
 using UnityEngine;
@@ -167,7 +184,9 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 					    (test-node function-name-sym?
 						       (test-car-data "add"))))))))
 
-(defparameter *code-test-expression-archimetic-simple-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2" "+" "3" ";" "}"))
+(defparameter *code-test-expression-archimetic-simple-tokens*
+  (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy"
+	"{" "private" "int" "a" "=" "2" "+" "3" ";" "}"))
 (defparameter *code-test-expression-archimetic-simple*
 " 
 using UnityEngine;
@@ -177,7 +196,10 @@ public class FactoryEconomy{
 }
 ")
 
-(defparameter *code-test-expression-archimetic-nested-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2" "+" "(" "3" "+" "1" ")" "-" "5" ";" "private" "int" "b" "=" "10" ";" "}"))
+(defparameter *code-test-expression-archimetic-nested-tokens*
+  (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy"
+	"{" "private" "int" "a" "=" "2" "+" "(" "3" "+" "1" ")" "-" "5"
+	";" "private" "int" "b" "=" "10" ";" "}"))
 (defparameter *code-test-expression-archimetic-nested*
 " 
 using UnityEngine;
@@ -188,7 +210,10 @@ public class FactoryEconomy{
 }
 ")
 
-(defparameter *code-test-expression-archimetic-nested-minus-tokens* (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy" "{" "private" "int" "a" "=" "2" "+" "(" "-" "3" "+" "1" ")" "-" "5" ";" "private" "int" "b" "=" "10" ";" "}"))
+(defparameter *code-test-expression-archimetic-nested-minus-tokens*
+  (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy"
+	"{" "private" "int" "a" "=" "2" "+" "(" "-" "3" "+" "1" ")" "-" "5" ";"
+	"private" "int" "b" "=" "10" ";" "}"))
 (defparameter *code-test-expression-archimetic-nested-minus*
 " 
 using UnityEngine;
@@ -199,7 +224,11 @@ public class FactoryEconomy{
 }
 ")
 
-(defparameter *code-test-class-function-call-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "e" "(" "3" "," "4" "," "5" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))		 
+(defparameter *code-test-class-function-call-tokens*
+  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class"
+	"FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1"
+	";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";"
+	"e" "(" "3" "," "4" "," "5" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))		 
 (defparameter *code-test-class-function-call*
 " 
 using UnityEngine;
@@ -216,7 +245,11 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 }
 ")
 
-(defparameter *code-test-class-function-call-in-expression-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "var" "t" "=" "e" "(" "3" "," "4" "," "5" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))
+(defparameter *code-test-class-function-call-in-expression-tokens*
+  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy"
+	":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add"
+	"(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "var" "t" "=" "e" "(" "3" "," "4" "," "5" ")" ";"
+	"return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}" ))
 (defparameter *code-test-class-function-call-in-expression*
 " 
 using UnityEngine;
@@ -233,7 +266,11 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 }
 ")
 
-(defparameter *code-test-class-function-call-in-expression-params-expression-tokens* (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "2" ";" "var" "t" "=" "e" "(" "3" "+" "5" "," "a" "," "c" "-" "d" ")" ";" "return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}"))
+(defparameter *code-test-class-function-call-in-expression-params-expression-tokens*
+  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":"
+	"BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1" ";" "public" "int" "add" "(" "int" "b" "," "int"
+	"c" ")" "{" "var" "d" "=" "2" ";" "var" "t" "=" "e" "(" "3" "+" "5" "," "a" "," "c" "-" "d" ")" ";"
+	"return" "b" ";" "}" "private" "int" "f" "=" "6" ";" "}"))
 (defparameter *code-test-class-function-call-in-expression-params-expression*
 " 
 using UnityEngine;
