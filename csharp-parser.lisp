@@ -97,8 +97,8 @@ Field = Visibility String as Type : FieldBody
 					   (grab-tokens-until-filtered tokenizer
 								       "{"
 								       ","))))
-	      (push-node class-inheritance-node class-declaration-node)))
-	  class-declaration-node))))
+	      (push-node class-inheritance-node class-declaration-node)))))
+      class-declaration-node))
 
 (defun parse-class-param-list (tokenizer)
   (parse-param-list tokenizer "class-parameters"))
