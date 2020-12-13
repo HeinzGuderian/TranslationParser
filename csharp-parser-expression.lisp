@@ -4,11 +4,10 @@
 
 (defmacro with-parse-expression ((tokenizer) &body body)
   `(loop do
-	(progn (advanze-token ,tokenizer)
-	       (with-token-and-peek ,@body
-	       ))
-      while (and (not (eq (peek-token ,tokenizer) nil))
-		 (not (match-end (peek-token ,tokenizer))))))
+	(progn (with-token-and-peek ,@body)
+	       (advanze-token ,tokenizer))
+      while (and (not (eq (current-token ,tokenizer) nil))
+		 (not (match-end (current-token ,tokenizer))))))
 
 (defun is-nested? (token)
   (match-para-begin token))
@@ -58,8 +57,9 @@
 	  ((match-para-end token) (return expr-list))
 	  ((match-comma token) (return expr-list))
 	  ((is-identifier? token)
+	   (print "is identifier")
 	   (push-node (make-identifier-node token) expr-list))
-	  (t (push-node (make-identifier-node "error parsing expression") expr-list))))
+	  (t (push-node (make-identifier-node (concatenate 'string "error parsing expression " token)) expr-list))))
   expr-list)
 
 (defun expression (tokenizer expr-list)

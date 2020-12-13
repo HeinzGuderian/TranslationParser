@@ -72,8 +72,8 @@
 			      (push (parse-token-to-ast-node ,tokenizer) ,node-stack)
 			      (setf ,node-stack (list (parse-token-to-ast-node ,tokenizer)))))))
 	       (advanze-token ,tokenizer))
-      while (and (not (eq (peek-token ,tokenizer) nil))
-		 (not (match-block-end (peek-token ,tokenizer))))))
+      while (and (not (eq (current-token ,tokenizer) nil))
+		 (not (match-block-end (current-token ,tokenizer))))))
 
 
 (defun make-visibility-symbol ()

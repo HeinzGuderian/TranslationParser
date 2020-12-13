@@ -31,7 +31,7 @@
   (lambda (node) (funcall test-fn test-data (car (data-from-ast-node node)))))
 (defun test-data (test-data &optional (test-fn #'equal))
   (lambda (node) (funcall test-fn test-data (data-from-ast-node node))))
-(defun **Macro-template-function** ()
+(defun **Macro-template-function-create-test-defun** ()
   (with-is-symbol ((variable-sym? "variable-name")
 		   (class-variable-sym? "class-variable"))
     (let ((test1 (gensym))
@@ -155,26 +155,18 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
 			    (test-node variable-type-sym?
 				       (test-car-data "int[]"))))))
 
-(defparameter *code-test-class-function-tokens*
-  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":"
-	"BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "2" ";" "public" "int" "add"
-	"(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "3" ";" "return" "b" ";" "}"
-	"private" "int" "e" "=" "5" ";" "}" ))
-(defparameter *code-test-class-function*
+(defparameter *code-test-expression-identifier-tokens*
+  (list "using" "UnityEngine" ";" "public" "class" "FactoryEconomy"
+	"{" "private" "int" "a" "=" "2" "+" "3" ";" "}"))
+(defparameter *code-test-expression-identifier*
 " 
 using UnityEngine;
-using UnityEngine;
 
-partial public class FactoryEconomy : BuildingEconomy, IGUI {
-  private int a = 2;
-  public int add(int b, int c){
-      var d = 3;
-      return b;
-  }
-  private int e = 5;
+public class FactoryEconomy{
+  private int a = b;
 }
 ")
-(create-test-defun *code-test-class-function-ast-tree*
+(create-test-defun *code-test-expression-identifier-ast-tree*
 		   ((function-sym? "function-node") (function-name-sym? "function-name")
 		    (function-declaration? "function-declaration"))
 		   ((test-node function-sym?
@@ -224,6 +216,36 @@ public class FactoryEconomy{
 }
 ")
 
+(defparameter *code-test-class-function-tokens*
+  (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy" ":"
+	"BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "2" ";" "public" "int" "add"
+	"(" "int" "b" "," "int" "c" ")" "{" "var" "d" "=" "3" ";" "return" "b" ";" "}"
+	"private" "int" "e" "=" "5" ";" "}" ))
+(defparameter *code-test-class-function*
+" 
+using UnityEngine;
+using UnityEngine;
+
+partial public class FactoryEconomy : BuildingEconomy, IGUI {
+  private int a = 2;
+  public int add(int b, int c){
+      var d = 3;
+      return b;
+  }
+  private int e = 5;
+}
+")
+(create-test-defun *code-test-class-function-ast-tree*
+		   ((function-sym? "function-node") (function-name-sym? "function-name")
+		    (function-declaration? "function-declaration"))
+		   ((test-node function-sym?
+			       (test-some-subnode
+				(test-node function-declaration?
+					   (test-some-subnode
+					    (test-node function-name-sym?
+						       (test-car-data "add"))))))))
+
+
 (defparameter *code-test-class-function-call-tokens*
   (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class"
 	"FactoryEconomy" ":" "BuildingEconomy" "," "IGUI" "{" "private" "int" "a" "=" "1"
@@ -244,6 +266,15 @@ partial public class FactoryEconomy : BuildingEconomy, IGUI {
   private int f = 6;
 }
 ")
+(create-test-defun *code-test-class-function-call-ast-tree*
+		   ((function-sym? "function-node") (function-name-sym? "function-name")
+		    (function-declaration? "function-declaration"))
+		   ((test-node function-sym?
+			       (test-some-subnode
+				(test-node function-declaration?
+					   (test-some-subnode
+					    (test-node function-name-sym?
+						       (test-car-data "add"))))))))
 
 (defparameter *code-test-class-function-call-in-expression-tokens*
   (list "using" "UnityEngine" ";" "using" "UnityEngine" ";" "partial" "public" "class" "FactoryEconomy"

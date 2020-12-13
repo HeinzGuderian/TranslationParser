@@ -51,7 +51,9 @@
 	nil)))
 
 (defun make-return-node (tokenizer)
+  (advanze-token tokenizer)
   (let ((return-node (make-ast-node "function-return" (parse-expression tokenizer))))
+    (print (current-token tokenizer))
     return-node))
 
 (defun make-function-variable (tokenizer node-stack)

@@ -19,6 +19,7 @@
       (let ((value (if (match-assign peek)
 		       (progn
 			 (advanze-token tokenizer)
+			 (advanze-token tokenizer)
 			 (let ((value-node (make-ast-node "variable-value" ())))
 			   (expression tokenizer value-node)
 			   value-node))
